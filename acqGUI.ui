@@ -35,7 +35,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QCheckBox" name="T2chn1Chk_3">
+        <widget class="QCheckBox" name="T2chn1Chk">
          <property name="text">
           <string>Channel 1 (511 keV)</string>
          </property>
@@ -45,7 +45,7 @@
         </widget>
        </item>
        <item row="0" column="2">
-        <widget class="QCheckBox" name="T2chn2Chk_3">
+        <widget class="QCheckBox" name="T2chn2Chk">
          <property name="text">
           <string>Channel 2 (511 keV)</string>
          </property>
@@ -55,31 +55,31 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QFrame" name="T2syncFrame_3">
+        <widget class="QFrame" name="T2syncFrame">
          <layout class="QFormLayout" name="T2syncLayout_3">
           <item row="0" column="0">
-           <widget class="QLabel" name="T2syncZeroLabel_3">
+           <widget class="QLabel" name="T2syncZeroLabel">
             <property name="text">
              <string>CFD zero cross (mV)</string>
             </property>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="T2syncLevelLabel_3">
+           <widget class="QLabel" name="T2syncLevelLabel">
             <property name="text">
              <string>CFD level (mV)</string>
             </property>
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QLabel" name="T2syncOffsetLabel_3">
+           <widget class="QLabel" name="T2syncOffsetLabel">
             <property name="text">
              <string>Chn offset (ps)</string>
             </property>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QSpinBox" name="T2syncOffsetValue_3">
+           <widget class="QSpinBox" name="T2syncOffsetValue">
             <property name="minimum">
              <number>-99999</number>
             </property>
@@ -99,7 +99,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QSpinBox" name="T2syncLevelValue_3">
+           <widget class="QSpinBox" name="T2syncLevelValue">
             <property name="minimum">
              <number>-1200</number>
             </property>
@@ -112,17 +112,17 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QFrame" name="T2chn1Frame_3">
+        <widget class="QFrame" name="T2chn1Frame">
          <layout class="QFormLayout" name="T2chn1Layout_3">
           <item row="0" column="0">
-           <widget class="QLabel" name="T2chn1ZeroLabel_3">
+           <widget class="QLabel" name="T2chn1ZeroLabel">
             <property name="text">
              <string>CFD zero cross (mV)</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QSpinBox" name="T2chn1ZeroValue_3">
+           <widget class="QSpinBox" name="T2chn1ZeroValue">
             <property name="minimum">
              <number>-40</number>
             </property>
@@ -132,14 +132,14 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="T2chn1LevelLabel_3">
+           <widget class="QLabel" name="T2chn1LevelLabel">
             <property name="text">
              <string>CFD level (mV)</string>
             </property>
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QSpinBox" name="T2chn1LevelValue_3">
+           <widget class="QSpinBox" name="T2chn1LevelValue">
             <property name="minimum">
              <number>-1200</number>
             </property>
@@ -149,14 +149,14 @@
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QLabel" name="T2chn1OffsetLabel_3">
+           <widget class="QLabel" name="label">
             <property name="text">
              <string>Chn offset (ps)</string>
             </property>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QSpinBox" name="T2chn1OffsetValue_3">
+           <widget class="QSpinBox" name="T2chn1OffsetValue">
             <property name="minimum">
              <number>-99999</number>
             </property>
@@ -169,31 +169,31 @@
         </widget>
        </item>
        <item row="1" column="2">
-        <widget class="QFrame" name="T2chn2Frame_3">
+        <widget class="QFrame" name="T2chn2Frame">
          <layout class="QFormLayout" name="T2chn2Layout_3">
           <item row="0" column="0">
-           <widget class="QLabel" name="T2chn2ZeroLabel_3">
+           <widget class="QLabel" name="T2chn2ZeroLabel">
             <property name="text">
              <string>CFD zero cross (mV)</string>
             </property>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="T2chn2LevelLabel_3">
+           <widget class="QLabel" name="T2chn2LevelLabel">
             <property name="text">
              <string>CFD level (mV)</string>
             </property>
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QLabel" name="T2chn2OffsetLabel_3">
+           <widget class="QLabel" name="T2chn2OffsetLabel">
             <property name="text">
              <string>Chn offset (ps)</string>
             </property>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QSpinBox" name="T2chn2OffsetValue_3">
+           <widget class="QSpinBox" name="T2chn2OffsetValue">
             <property name="minimum">
              <number>-99999</number>
             </property>
@@ -203,7 +203,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QSpinBox" name="T2chn2ZeroValue_3">
+           <widget class="QSpinBox" name="T2chn2ZeroValue">
             <property name="minimum">
              <number>-40</number>
             </property>
@@ -213,7 +213,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QSpinBox" name="T2chn2LevelValue_3">
+           <widget class="QSpinBox" name="T2chn2LevelValue">
             <property name="minimum">
              <number>-1200</number>
             </property>
@@ -233,7 +233,7 @@
         </widget>
        </item>
        <item row="2" column="2">
-        <widget class="QPushButton" name="T2applySetBtn_3">
+        <widget class="QPushButton" name="T2applySetBtn">
          <property name="text">
           <string>Apply settings</string>
          </property>
@@ -258,28 +258,28 @@
        <item row="3" column="0" rowspan="2">
         <layout class="QFormLayout" name="formLayout_9">
          <item row="0" column="0">
-          <widget class="QLabel" name="T2acqTimePerFileLabel_3">
+          <widget class="QLabel" name="T2acqTimePerFileLabel">
            <property name="text">
             <string>Acq time per file (min)</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QSpinBox" name="T2acqTimePerFileValue_3">
+          <widget class="QSpinBox" name="T2acqTimePerFileValue">
            <property name="maximum">
             <number>6000</number>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QLabel" name="T2acqNoFilesLabel_3">
+          <widget class="QLabel" name="T2acqNoFilesLabel">
            <property name="text">
             <string>Total number of files</string>
            </property>
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QSpinBox" name="T2acqNoFilesValue_3">
+          <widget class="QSpinBox" name="T2acqNoFilesValue">
            <property name="maximum">
             <number>6000</number>
            </property>
@@ -290,7 +290,7 @@
        <item row="0" column="0" colspan="2">
         <layout class="QHBoxLayout" name="horizontalLayout_7">
          <item>
-          <widget class="QRadioButton" name="T2modeTriple_3">
+          <widget class="QRadioButton" name="T2modeTriple">
            <property name="text">
             <string>Triple coincidence</string>
            </property>
@@ -300,7 +300,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QRadioButton" name="T2modeDouble_3">
+          <widget class="QRadioButton" name="T2modeDouble">
            <property name="text">
             <string>Double coincidence</string>
            </property>
@@ -314,21 +314,21 @@
        <item row="6" column="0" colspan="3">
         <layout class="QHBoxLayout" name="horizontalLayout_8">
          <item>
-          <widget class="QLabel" name="T2filenameLabel_3">
+          <widget class="QLabel" name="T2filenameLabel">
            <property name="text">
             <string>Output file name</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="T2filenameBtn_3">
+          <widget class="QPushButton" name="T2filenameBtn">
            <property name="text">
             <string>Pick a file</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="T2filenameValue_3">
+          <widget class="QLineEdit" name="T2filenameValue">
            <property name="clearButtonEnabled">
             <bool>true</bool>
            </property>
@@ -339,28 +339,28 @@
        <item row="3" column="1" rowspan="2">
         <layout class="QFormLayout" name="formLayout_10">
          <item row="0" column="0">
-          <widget class="QLabel" name="T2timeGateLongLabel_3">
+          <widget class="QLabel" name="T2timeGateLongLabel">
            <property name="text">
             <string>time gate long (ps)</string>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QLabel" name="T2timeGateShortLabel_3">
+          <widget class="QLabel" name="T2timeGateShortLabel">
            <property name="text">
             <string>time gate 511 (ps)</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QSpinBox" name="T2timeGateLongValue_3">
+          <widget class="QSpinBox" name="T2timeGateLongValue">
            <property name="maximum">
             <number>20000</number>
            </property>
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QSpinBox" name="T2timeGateShortValue_3">
+          <widget class="QSpinBox" name="T2timeGateShortValue">
            <property name="maximum">
             <number>20000</number>
            </property>
@@ -371,7 +371,7 @@
        <item row="7" column="1" colspan="2">
         <layout class="QHBoxLayout" name="horizontalLayout_9">
          <item>
-          <widget class="QPushButton" name="T2startBtn_3">
+          <widget class="QPushButton" name="T2startBtn">
            <property name="minimumSize">
             <size>
              <width>197</width>
@@ -389,7 +389,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="T2stopBtn_3">
+          <widget class="QPushButton" name="T2stopBtn">
            <property name="minimumSize">
             <size>
              <width>196</width>
@@ -409,7 +409,7 @@
         </layout>
        </item>
        <item row="1" column="0" colspan="3">
-        <widget class="Line" name="line_3">
+        <widget class="Line" name="line">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -423,16 +423,16 @@
         </widget>
        </item>
        <item row="5" column="0">
-        <widget class="QCheckBox" name="T2doHistChk_3">
+        <widget class="QCheckBox" name="T2doHistChk">
          <property name="text">
           <string>Do histrogramming</string>
          </property>
         </widget>
        </item>
       </layout>
-      <zorder>line_3</zorder>
+      <zorder>line</zorder>
       <zorder>label_12</zorder>
-      <zorder>T2doHistChk_3</zorder>
+      <zorder>T2doHistChk</zorder>
       <zorder>label_17</zorder>
      </widget>
     </item>
@@ -593,7 +593,7 @@
               </widget>
              </item>
              <item row="2" column="2">
-              <widget class="QLabel" name="rateTotalLabel_2">
+              <widget class="QLabel" name="rateTotalLabel">
                <property name="text">
                 <string>Total</string>
                </property>
