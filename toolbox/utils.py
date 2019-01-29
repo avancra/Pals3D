@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Aug 27 10:11:18 2018
 
-@author: vancraa1
+(c) Aurelie Vancraeyenest 2018
 """
 
 import itertools

@@ -3,21 +3,35 @@
 """
 Created on Thu Aug 23 11:17:57 2018
 
-@author: vancraa1
+(c) Aurelie Vancraeyenest 2018
 """
 
-# from statistics import mean
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
-# import matplotlib.text as text
-
-# TODO : DOC
 
 
-def plotFitHist(data, figname='test.pdf', bins=161, rmin=2000, rmax=6000):
-    # TODO: determine bins automatically
-    # histo, bin_edges, _ = plt.hist(data, bins=bins, range=[rmin, rmax])
+def plotFitHist(data, figname='fig.pdf', bins=161, rmin=2000, rmax=6000):
+    """
+    Plot an histogramm and fit with Gaussian and Lorentzian functions
+
+    Parameters
+    ----------
+    data : np.array
+        Input data
+    figname : str
+        Output filename of the file to save the figure
+    bins : int
+        Number of equal-width bins in the given range
+    rmin : int
+        max (most right-end bin edge) of the histogramm
+    rmax : int
+        min (most left-end bin edge) of the histogramm
+
+    See Also
+    --------
+    plotHist, plotHists, saveHists
+    """
     histo, bin_edges = np.histogram(data, bins=bins, range=[rmin, rmax])
     bin_centers = 0.5*(bin_edges[1:] + bin_edges[:-1])
 
@@ -45,9 +59,30 @@ def plotFitHist(data, figname='test.pdf', bins=161, rmin=2000, rmax=6000):
     plt.show()
 
 
-def plotHist(data, figname='test.pdf', bins=161, rmin=2000, rmax=6000, logY=False):
-    # TODO: determine bins automatically
-    # histo, bin_edges, _ = plt.hist(data, bins=bins, range=[rmin, rmax])
+def plotHist(data, figname='fig.pdf', bins=161, rmin=2000, rmax=6000,
+             logY=False):
+    """
+    Plot an histogramm and save the output spectrum as a figure
+
+    Parameters
+    ----------
+    data : np.array_like
+        Input data
+    figname : str
+        Output filename of the file to save the figure
+    bins : int
+        Number of equal-width bins in the given range
+    rmin : int
+        max (most right-end bin edge) of the histogramm
+    rmax : int
+        min (most left-end bin edge) of the histogramm
+    logY : bool
+        Allow to plot the histogram in a logarithmique scale
+
+    See Also
+    --------
+    plotHist, plotHists, saveHists
+    """
     histo, bin_edges = np.histogram(data, bins=bins, range=[rmin, rmax])
     bin_centers = 0.5*(bin_edges[1:] + bin_edges[:-1])
 
@@ -63,9 +98,32 @@ def plotHist(data, figname='test.pdf', bins=161, rmin=2000, rmax=6000, logY=Fals
     plt.show()
 
 
-def plotHists(data, figname='test.pdf', bins=161, rmin=2000, rmax=6000,
+def plotHists(data, figname='fig.pdf', bins=161, rmin=2000, rmax=6000,
               logY=False, style='-'):
-    # TODO: determine bins automatically
+    """
+    Plot multiple histograms and save the output spectrum as a figure
+
+    Parameters
+    ----------
+    data : np.array_like
+        Input data as multiple numpy arrays
+    figname : str
+        Output filename of the file to save the figure
+    bins : int
+        Number of equal-width bins in the given range
+    rmin : int
+        max (most right-end bin edge) of the histogramm
+    rmax : int
+        min (most left-end bin edge) of the histogramm
+    logY : bool
+        Allow to plot the histogram in a logarithmique scale
+    style : str
+        Plotting style, see matplotlib for more info
+
+    See Also
+    --------
+    plotHist, plotHists, saveHists
+    """
     for data in data:
         histo, bin_edges = np.histogram(data, bins=bins, range=[rmin, rmax])
         bin_centers = 0.5*(bin_edges[1:] + bin_edges[:-1])
@@ -81,23 +139,55 @@ def plotHists(data, figname='test.pdf', bins=161, rmin=2000, rmax=6000,
     plt.show()
 
 
-def saveHists(data, filebase='test', bins=161, rmin=2000, rmax=6000, useChnEnding=False):
+def saveHists(data, filebase='histo', bins=161, rmin=2000, rmax=6000,
+              useChnEnding=False):
+    """
+    Sort each data-set in data into histogram and save as text files
+
+    Parameters
+    ----------
+    data : list of np.array_like
+        Input data asa list of several numpy arrays
+    filebase : str
+        Output filename base that will serve to form the output
+        filename of each text file generated.
+        Output file format is ASCII
+    bins : int
+        Number of equal-width bins in the given range
+    rmin : int
+        max (most right-end bin edge) of the histogramm
+    rmax : int
+        min (most left-end bin edge) of the histogramm
+    useChnEnding : bool
+        If Ture, channel ending type are inserted in the filename
+        before the file extension. In False, an integer reprenseting
+        the position in the input dataset is inserted instead
+
+    See Also
+    --------
+    plotHist, plotHists, saveHists
+    """
     ii = 0
     chnEndings = ('01', '02', '12')
     for data in data:
-        histo, bin_edges = np.histogram(data, bins=bins, range=[rmin, rmax])
+        histo, bin_edges = np.histogram(np.array(data), bins=bins,
+                                        range=[rmin, rmax])
         if useChnEnding is True:
-            filename = filebase + chnEndings[ii] + '.hst'
+            filename = filebase + '_' + chnEndings[ii] + '.hst'
         else:
-            filename = filebase + str(ii) + '.txt'
+            filename = filebase + '_' + str(ii) + '.txt'
         np.savetxt(filename, histo, fmt='%i',
                    header="bins: {}\nrange: [{}:{}]".format(bins, rmin, rmax))
         ii += 1
 
 
 def lorentz(x, x0, sig, amp):
+    """ Formula for a Lorentzian
+    """
     return (amp/(2*np.pi)*sig/((x-x0)**2+sig**2/4))
 
 
 def gaussian(x, x0, sig, amp):
+    """ Formula for a Gaussian
+    """
     return (amp/(sig*np.sqrt(2*np.pi))*np.exp(-((x-x0)**2)/(2*sig**2)))
