@@ -20,10 +20,86 @@ from PyQt5 import QtCore
 
 class TH260Controller(QtCore.QObject):
     """
-    TH260Controller is meant to access a PicoQuant TimeHarp 260 Pico
-    via TH260LIB.DLL v 3.1. for applications to positron annihilation
-    lifetime spectroscopy.
+    TH260 controller class to configure and monitor a TH260 P card
 
+    TH260Controller is meant to access a PicoQuant TimeHarp 260 Pico
+    via TH260LIB.DLL v 3.1. for application to positron annihilation
+    lifetime spectroscopy.
+    It is derived from QtCore.QObject to allow the use of signals and
+    slots logic to communicate between thread workers (usually a GUI
+    application and a sorter worker).
+
+    Methods:
+    --------
+    closeDevices()
+         Close the currently opened devices
+    tryfunc( retcode, funcName, measRunning = False)
+        Check for errors when executing a function
+    searchDevices()
+        Search and list available devices on the host computer
+    initialization()
+        Initialize communication with TH260 pico card
+    configureSetting()
+        Set the card paramaters before starting a measurement
+    getCountRates()
+        Get the count rates for each channels and store them
+    stoptttr()
+        Stop the ongoing TTTR measurement
+    startAcquisition()
+        Start data collection with current settings
+
+    Supported signals:
+    -----------------
+    NEW_OUTPUT : str
+        message to be printed in a console or GUI output
+    WARNING : str
+        Warming messages for console output or message box in GUI
+    PROGRESS : str = 'file', int
+        Signal to share the progress status of the on-going acquisition.
+        The first argument should always be 'file' when use together
+        with the Pals3D GUI application. 'file' refer to the status of
+        a single acquisition file in opposition to 'acq' that relate
+        to the totale acquisition programm, and that is sent by the
+        acquisition worker of the GUI application.
+        This can be changed when used with an external application.
+    DATA : object, int
+        Signal to share data object with the sorter worker of TH260
+        module. The first argument is the data object itself, here a
+        c_type array buffer. The second argument is the number of records
+        contained in the data buffer.
+    ERROR : tuple
+        Not yet in use.
+    ACQ_ENDED : None
+        Signal send to the sorter worker to force the sorting of last
+        events.
+    DEVINIT : bool
+        Sent by the initialization method when the device is
+        successfuly initialised.
+    UPDATECountRate : None
+        Sent to the GUI application to force the update of these values
+        in the GUI application.
+
+    Class Constants:
+    ----------------
+    These class constants are hardware limits for the TH260 Pico card.
+
+    LIB_VERSION = "3.1" ;
+    MAXDEVNUM = 4 ;
+    MODE_T2 = 2 ;
+    MODE_T3 = 3 ;
+    MAXLENCODE = 5 ;
+    MAXINPCHAN = 2 ;
+    TTREADMAX = 131072 ;
+    FLAG_OVERFLOW = 0x0001 ;
+    FLAG_FIFOFULL = 0x0002 ;
+    CFDLVLMIN = -1200 ;
+    CFDLVLMAX = 0 ;
+    CFDZCMIN = -40 ;
+    CFDZCMAX = 0 ;
+    CHANOFFSMIN = -99999 ;
+    CHANOFFSMAX = 99999 ;
+    ACQTMIN = 1	;
+    ACQTMAX = 360000000
     """
 
     # Constants from the DLL th260defin.h
@@ -57,8 +133,7 @@ class TH260Controller(QtCore.QObject):
     UPDATECountRate = QtCore.pyqtSignal()
 
     def __init__(self):
-        """
-        """
+        """ Constructor for TH260Controller class """
         super(TH260Controller, self).__init__()
         # Setting variables
         self.mode = self.MODE_T2
@@ -104,31 +179,45 @@ class TH260Controller(QtCore.QObject):
     # in case console output is not desired.
     @QtCore.pyqtSlot(str)
     def printOutput(self, text):
+        """
+        Print a message to console output.
+
+        Meant to be used as slot for the NEW_OUTPUT and WARNING signals
+        when no other slot (e.g. GUI application) is defined.
+
+        Parameters:
+        -----------
+        text : str
+            Message to be printed to console output
+
+        """
         print(text)
 
     # ----------------- dealing with device ---------------------- #
     def closeDevices(self):
-        """ Close the currently opened devices
-        """
+        """Close the currently opened devices"""
         for i in range(0, self.MAXDEVNUM):
             self.TH260LIB.TH260_CloseDevice(ct.c_int(i))
 
     def tryfunc(self, retcode, funcName, measRunning=False):
-        """ Check for errors when executing a function
+        """
+        Check for errors when executing a function
 
-            If an error is raised, print the corresponding error message,
-            stop the TTTR measurement if needed and close the device
+        If an error is raised, print the corresponding error
+        message, stop the TTTR measurement if needed and close the
+        device.
 
-            Parameters
-            -------
-            retcode: int
-                code return by the function funcName
-            funcName: str
-                Name of the function being executed
-            measRunning: bool, default False
-                specify if TTTR measurement is running.
-                If True, the measurement will be stopped in case of
-                an error is encountered before closing the device
+        Parameters
+        -------
+        retcode: int
+            code return by the function funcName
+            (0 = success, <0 = failed)
+        funcName: str
+            Name of the function being executed
+        measRunning: bool, default False
+            specify if TTTR measurement is running.
+            If True, the measurement will be stopped when an error
+            occured, and then the device is closed
         """
         if retcode < 0:
             self.TH260LIB.TH260_GetErrorString(self.errorString,
@@ -146,8 +235,7 @@ class TH260Controller(QtCore.QObject):
                 self.closeDevices()
 
     def searchDevices(self):
-        """ Search and list all available devices on the host computer
-        """
+        """Search and list available devices on the host computer """
         self.TH260LIB.TH260_GetLibraryVersion(self.libVersion)
         self.NEW_OUTPUT.emit("Library version is %s"
                              % self.libVersion.value.decode("utf-8"))
@@ -185,10 +273,10 @@ class TH260Controller(QtCore.QObject):
 
     def initialization(self):
         """
-            Initialize communication with TH260 pico card
+        Initialize communication with TH260 pico card
 
-            When initializationg is successfuly done, emit a DEVINIT signal
-            with True value
+        When initializationg is successfuly done, emit a DEVINIT
+        signal with a True value.
         """
         self.NEW_OUTPUT.emit("\nInitializing the device...")
         # with internal clock
@@ -215,13 +303,13 @@ class TH260Controller(QtCore.QObject):
 
     def configureSetting(self):
         """
-            Set the card paramaters before starting a measurement
+        Set the card paramaters before starting a measurement
 
-            Parameters are either change in the init function, or acquired
-            through an external script or GUI.
-            Here, we only set CFD parameters and channel offsets
-            and the device resolution should always be 25 ns as we are
-            running in T2 mode only
+        Parameters are either changed in the init function, or
+        acquired through an external script or GUI. Here, we only
+        set CFD parameters and channel offsets and the device
+        resolution should always be 25 ns as we are running in T2
+        mode only.
         """
 
         self.tryfunc(self.TH260LIB.TH260_SetSyncDiv(
@@ -293,8 +381,7 @@ class TH260Controller(QtCore.QObject):
 
     # ----------- data aqcuisition ---------------- #
     def getCountRates(self):
-        """ Get the count rates for each channels and store them as a list
-        """
+        """Get the count rates for each channels and store them"""
         self.tryfunc(self.TH260LIB.TH260_GetSyncRate(
                      ct.c_int(self.dev[0]),
                      byref(self.syncRate)),
@@ -310,14 +397,18 @@ class TH260Controller(QtCore.QObject):
             self.countRates[i+1] = self.countRate.value
 
     def stoptttr(self):
-        """ Stop the ongoing TTTR measurement
-        """
+        """Stop the ongoing TTTR measurement"""
         self.tryfunc(self.TH260LIB.TH260_StopMeas(ct.c_int(self.dev[0])),
                      "StopMeas")
 
     def startAcquisition(self):
         """
-            Start an acquisition
+        Start data collection with current settings
+
+        Launch measurement according to current settings. Emit signals
+        to communicate with other workers. Data buffers are emitted
+        through a signal for being sorted by the TH260sorter module.
+        Output messages and countrates are also sent over signals.
         """
         # TODO: clean up a bit
         self.NEW_OUTPUT.emit("Starting data collection...\n")

@@ -22,10 +22,48 @@ import toolbox.utils as ut
 
 class SortingWorker(QtCore.QObject):
     """
-        Data sotring class for data received for a TH260 PicoQuant card
+    Data sorting class for data received from a TH260 PicoQuant card
 
-        Inherit from QObect to use Qt signal and slot logic for receiving
-        and sorting data. Can then be easily used in a GUI application
+    Inherit from QObect to use Qt signal and slot logic for receiving
+    and sorting data. Can then be easily used in a GUI application
+
+    Attributes:
+    ----------
+    dataArray : dict
+    dataDeck : deque
+    islastEvent : bool
+    globRes : double
+    resultArray_01 : list
+    resultArray_02 : list
+    resultArray_12 : list
+    kwargs :
+
+    Methods:
+    --------
+    newMeasurement(noFile):
+        Initialise class attributes for new measurement
+    saveData(noFile):
+        Do histogramming of the whole data set and save to files
+    processLastEvents()
+        Force the processing of the last events to empty dataDeck
+    sortDeck()
+        Check if the data deque is full to start the sorting according
+        to the sortingType ('2C' or '3C')
+    sortBuffer(buffer, nrecords)
+        Decode buffer individual events to produce a time tagged event
+
+    Supported signals:
+    -----------------
+    COINCRATE : int
+        Number of coincidence events during one acquisition
+    NEW_OUTPUT : str
+        message to be printed in a console or GUI output
+
+    Class Constants:
+    ----------------
+    T2WRAPAROUND_V1 = 33552000 ;
+    T2WRAPAROUND_V2 = 33554432 ;
+    VERSION = 2
 
     """
     # TODO: Define here the signals
@@ -37,6 +75,7 @@ class SortingWorker(QtCore.QObject):
     VERSION = 2
 
     def __init__(self, **kwargs):
+        """Constructor method of the TH260sorter class"""
         super(SortingWorker, self).__init__()
         self.kwargs = kwargs
         self.globRes = 25.0e-12
@@ -51,6 +90,15 @@ class SortingWorker(QtCore.QObject):
         self.islastEvent = False
 
     def newMeasurement(self, noFile):
+        """
+        Initialise class attributes for new measurement
+
+        Parameters:
+        -----------
+        noFile : int
+            File numero in case of multiple file acquisition
+
+        """
         # ???: QMutex here?
 
         self.dataDeck.clear()
@@ -66,6 +114,16 @@ class SortingWorker(QtCore.QObject):
         self.islastEvent = False
 
     def saveData(self, noFile):
+        """
+        Do histogramming of the whole data set and save to files
+
+        Parameters:
+        -----------
+        noFile : int
+            Numero of the current acquisition file to be appended to
+            the filename base.
+        """
+
         self.NEW_OUTPUT.emit("Saving data...")
         try:
             filebase, extension = self.file.rsplit(sep=".", maxsplit=1)
@@ -111,17 +169,20 @@ class SortingWorker(QtCore.QObject):
                        comments='#', delimiter='\t')
 
     def _gotPhoton(self, recNum, timeTag, channel, dtime):
-        """ Deals with real photon events
+        """
+        Append real photon events to dataDeck
 
-            If global variable sortingType is not None, sort the events
-            according to the specified sortingType (2C, 3C)
-
-            parameters:
-                timeTag: int
-
-                channel: int
-
-                dtime: int
+        parameters:
+        -----------
+        recNum : int
+            Record numero
+        timeTag: int
+            Timetag corrected by the overflow tags with respect to the
+            overall measurment start (tick resolution 25 ps)
+        channel: int
+            Channel number: 0 (sync), 1-2 (channel)
+        dtime: int
+            Real time : timeTag * self.globRes * 1e12
         """
         self.dataDeck.append((recNum, channel, timeTag,
                               timeTag * self.globRes * 1e12))
@@ -129,10 +190,17 @@ class SortingWorker(QtCore.QObject):
 
     @QtCore.pyqtSlot()
     def processLastEvents(self):
+        """Force the processing of the last events to empty dataDeck"""
+
         self.islastEvent = True
         self.sortDeck()
 
     def sortDeck(self):
+        """
+        Check if the data deque is full to start the sorting according
+        to the sortingType ('2C' or '3C')
+        """
+
         if ((len(self.dataDeck) == self.dataDeck.maxlen)
            or (self.islastEvent is True)):
             if self.sortingType is '2C':
@@ -143,7 +211,23 @@ class SortingWorker(QtCore.QObject):
                 self.COINCRATE.emit(n3Dcoinc)
 
     def _2Cfiltering(self):
-        """ # TODO: doc 2C"""
+        """
+        Process the events into double coincidence events
+
+        Use the pairwise function of the utils module to look at each
+        pair of successive photons and determine if they are recorded
+        in the timeGate time interval, and if they are issued from
+        different channels.
+        If so, store the time difference into the corresponding list
+        of the dataArray dict.
+
+        Warnings:
+        ---------
+        Note that we are looking at paires only, so in case of true
+        triple coinc, we might miss the coinc between first and 3rd
+        event. It doesn't matter for resolution with Co measurements,
+        but can have a slight impact for true experiments
+        """
 
         # !!! Note that we are looking at paires only, so in case of
         # true triple coinc, we might miss the coinc between first and 3rd evt.
@@ -178,7 +262,25 @@ class SortingWorker(QtCore.QObject):
         return ncoinc
 
     def _3Cfiltering(self):
-        """ # TODO: doc 3C """
+        """
+        Process the events into triple coincidence events
+
+        Use the tripletwise function of the utils module to look at each
+        triplet of successive photons and determine if they are real
+        triple coincidence events.
+
+        A triple coicidence event is defined as follow:
+        three successive events are recorded from three different
+        channels and the first event should be recorded in the sync
+        channel (chan 0). Further requirements are that the time
+        difference between records in channel 1 and 2 should be less
+        than timeRes and that the three events are recorded within the
+        timeGate time interval.
+
+        If so, store the time difference into the corresponding list
+        of the dataArray dict.
+
+        """
 
         keeplast = False
         ncoinc = 0
@@ -227,6 +329,17 @@ class SortingWorker(QtCore.QObject):
         return ncoinc
 
     def sortBuffer(self, buffer, nrecords):
+        """
+        Decode buffer individual events to produce a time tagged event
+
+        Parameters:
+        -----------
+        buffer : object - ctype array buffer
+            Raw data buffer received over a signal from the acquisition
+            thread.
+        nrecords : int
+            Total number of records in the buffer
+        """
         # data received over a signal
         self.dataToSort = buffer  # received from a signal ctype array
         self.numRecords = nrecords  # received from a signal
