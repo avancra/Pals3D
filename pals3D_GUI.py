@@ -21,13 +21,7 @@ import th260sorter
 
 
 class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
-
-    """
-        Main instance for the GUI of the hv controller panel
-
-    TO be completed
-
-    """
+    """ Main instance for the GUI of the hv controller panel """
 
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -84,6 +78,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
     # ------ Slots and GUI logic ------#
     @QtCore.pyqtSlot()
     def updateCountRates(self):
+        """Update the display of the count rate widgets"""
         self.rateSyncValue.display(self.th260.countRates[0])
         self.rateChn1Value.display(self.th260.countRates[1])
         self.rateChn2Value.display(self.th260.countRates[2])
@@ -91,6 +86,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
     @QtCore.pyqtSlot(int)
     def updateCoincRates(self, count):
+        """Update the display of the coincidence count widgets"""
         if self.sortingWorker.sortingType == "2C":
             self.rateDoubleValue.display(self.rateDoubleValue.value() + count)
         else:
@@ -98,6 +94,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def on_T2filenameBtn_clicked(self):
+        """Open a file dialog to select a destination file"""
         self.T2filename, _ = QtWidgets.QFileDialog.getSaveFileName(
                 self, caption="choose a file",
                 directory=self.T2defaultFileDir,
@@ -106,6 +103,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
     @QtCore.pyqtSlot(int)
     def on_T2chn1Chk_stateChanged(self, state):
+        """Enable/disable corresponding widgets when clicked"""
         if state == 0:   # Unchecked
             ut.disableChildOf(self.T2chn1Frame)
         if state == 2:  # Checked
@@ -113,6 +111,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
     @QtCore.pyqtSlot(int)
     def on_T2chn2Chk_stateChanged(self, state):
+        """Enable/disable corresponding widgets when clicked"""
         if state == 0:   # Unchecked
             ut.disableChildOf(self.T2chn2Frame)
         if state == 2:  # Checked
@@ -120,6 +119,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
     @QtCore.pyqtSlot(bool)
     def on_T2modeDouble_toggled(self, checked):
+        """Enable/disable the time resolution gate"""
         if checked:
             self.T2timeGateShortValue.setEnabled(False)
         else:
@@ -127,10 +127,12 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def on_T2saveDefaultPrmBtn_clicked(self):
+        """Save the CFD settings as default"""
         self.saveSettings()
 
     @QtCore.pyqtSlot()
     def on_T2applySetBtn_clicked(self):
+        """Fetch and apply the CFD settings"""
         self.fetchSettings("T2")
         self.printOutput(
                 """Measurement settings:\n
@@ -156,6 +158,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def on_T2startBtn_clicked(self):
+        """Fetch settings for CFD and acquisition, then start measurement"""
         self.fetchSettings("T2")
         self.printOutput(
                 """Measurement settings:\n
@@ -214,6 +217,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def startAcquisition(self, mode):
+        """Configure some variable of the TH260 controller and start"""
         # TODO: check param input
         self.saveAcqSettings()
         self.th260.countRates[3] = 0
@@ -253,7 +257,18 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
     @QtCore.pyqtSlot(str, int)
     def updateProgress(self, mode, prog):
-        pass
+        """
+        Update the display of the acquisition progress bars
+
+        Parameters:
+        -----------
+        mode : str
+            'file' or 'acq'
+        prog : int
+            for mode = 'file' time elapsed since the acquisition starts
+
+            for mode = 'acq' number of file recorded up to now
+        """
         if mode == "file":
             progRatio = prog*100/self.th260.tacq
             self.acqProgFileBar.setValue(progRatio)
@@ -263,6 +278,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def on_T2stopBtn_clicked(self):
+        """Stop the TTTR measurement and enable acq/settings widgets"""
         ut.enableChildOf(self.T2acqGrp)
         ut.enableChildOf(self.T2settingsGrp)
 
@@ -270,10 +286,8 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         self.th260.stoptttr()
         self.countRatesTimer.start()
 
-
     def fetchAcqSettings(self, mode):
-        """
-        """
+        """Get the acquisition settings from the GUI widgets"""
         if mode == "T2":
             # TODO : change back to *60000
             self.th260.tacq = self.T2acqTimePerFileValue.value()*1000  # *60000
@@ -285,8 +299,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
                 self.timeGate511 = None
 
     def fetchSettings(self, mode):
-        """
-        """
+        """Get the CFD settings for each channel from the GUI widgets"""
 
         if mode is "T2":
             self.th260.syncCFDLevel = self.T2syncLevelValue.value()
@@ -302,6 +315,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         return False, None
 
     def saveSettings(self):
+        """Store the currents CFD settings as default values"""
         self.settings.setValue('T2chn1LevelValue',
                                self.T2chn1LevelValue.value())
         self.settings.setValue('T2chn1OffsetValue',
@@ -324,6 +338,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
                                self.T2syncZeroValue.value())
 
     def saveAcqSettings(self):
+        """Store the currents acquisition settings as default values"""
         self.settings.setValue('T2modeDouble',
                                self.T2modeDouble.isChecked())
         self.settings.setValue('T2acqTimePerFileValue',
@@ -341,7 +356,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
                                self.T2doHistChk.isChecked())
 
     def restaureSettings(self):
-
+        """Load the default values for CFD and acquisition settings"""
         self.T2chn1LevelValue.setValue(
                 self.settings.value('T2chn1LevelValue', type=int))
         self.T2chn1OffsetValue.setValue(
@@ -383,8 +398,8 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         self.T2defaultFileDir = self.settings.value('T2filePath', type=str)
 
     def setupWidgetLimits(self):
-        """ Set the hardware limits to the corresponding widgets
-        """
+        """Set the hardware limits to the corresponding widgets"""
+
         self.T2chn1LevelValue.setMaximum(self.th260.CFDLVLMAX)
         self.T2chn1LevelValue.setMinimum(self.th260.CFDLVLMIN)
         self.T2chn2LevelValue.setMaximum(self.th260.CFDLVLMAX)
@@ -414,19 +429,23 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
     def printOutput(self, text):
         """
-            Append command outputs to the text box of the GUI
+        Append command outputs to the text box of the GUI
 
-            parameters:
-            ----
-                s: 'str' -- emitted via threadpool threads
+        Parameters:
+        -----------
+        text : 'str'
+            Message to be printed in the command output widget
         """
         self.commandOutput.appendPlainText(text)
 
     def showError(self, message):
         """
-            Display "message" in a "Critical error" message box
-            with 'OK' button.
+        Display "message" in a "Critical error" message box with 'OK' button.
 
+        Parameters:
+        -----------
+        message : 'str'
+            Message to be printed in the command output widget
         """
 
         # Create a QMessagebox
@@ -444,7 +463,14 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         messageBox.exec_()
 
     def showWarning(self, message):
+        """
+        Display "message" in a "Warning" message box with 'OK' button.
 
+        Parameters:
+        -----------
+        message : 'str'
+            Message to be printed in the command output widget
+        """
         # Create a QMessagebox
         messageBox = QtWidgets.QMessageBox()
 
@@ -460,6 +486,15 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         messageBox.exec_()
 
     def showQuestion(self, message):
+        """
+        Display "message" in a "Warning question" message box with
+        'OK' and 'Cancel' button
+
+        Parameters:
+        -----------
+        message : 'str'
+            Message to be printed in the command output widget
+        """
         self.messageBox = QtWidgets.QMessageBox()
         self.messageBox.setText(message)
         self.messageBox.setWindowTitle("Question")
@@ -467,7 +502,8 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         self.messageBox.setIcon(QtWidgets.QMessageBox.Warning)
         self.messageBox.setStandardButtons(QtWidgets.QMessageBox.Cancel
                                            | QtWidgets.QMessageBox.Ok)
-        self.messageBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+        self.messageBox.setTextInteractionFlags(
+                                            QtCore.Qt.TextSelectableByMouse)
 
         # Show the window
         self.messageBox.raise_()
@@ -477,7 +513,12 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
 # ---------- Thread workers ---------- #
 class TH260Thread(QtCore.QRunnable):
+    """
+    Generic QRunnable that takes a function and its args/kwargs
+    as arguments to run it in a threadpool
+    """
     def __init__(self, fn, *args, **kwargs):
+        """Constructor of the TH260Thread """
         super(TH260Thread, self).__init__()
         self.fn = fn
         self.args = args
@@ -496,12 +537,20 @@ class TH260Thread(QtCore.QRunnable):
 
 class T2AcquisitionThread(QtCore.QThread):
     """
-        Write docstring here
+    Write docstring here
 
-        Supported signals:
-        ----
-            globProgress: 'str', 'int'
-                Emitted at the end of each single acquisition
+    Supported signals:
+    ------------------
+    globProgress : str, int
+        Emitted at the end of each single acquisition
+    fileDone : int
+        Emitted when the nth acquisition has ended. Sent with n as
+        argument
+    newMeas : int
+        Emmitted while starting a new measurment with as argument the
+        numero of the starting acquisition
+    measDone : None
+        Not in use
     """
     globProgress = QtCore.pyqtSignal(str, int)
     fileDone = QtCore.pyqtSignal(int)
