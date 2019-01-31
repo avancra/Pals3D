@@ -109,7 +109,6 @@ class SortingWorker(QtCore.QObject):
         self.timeGate = self.kwargs["timeGate"]
         self.timeRes = self.kwargs["timeRes"]
         self.file = self.kwargs["filename"]
-        self.doHist = self.kwargs["doHist"]
         self.oflcorrection = 0
         self.islastEvent = False
 
@@ -143,30 +142,29 @@ class SortingWorker(QtCore.QObject):
             np.save(outputFileName, evtl)
 
         # Do histogramming
-        if self.doHist:
-            rmax = int(self.timeGate)
-            # We want bins centered on multiple of 25ps
-            bins_sync = np.arange(-12.5, rmax+13, 25)
-            bins_chn = np.arange(-(rmax//2+12.5), rmax//2+13, 25)
-            histo01, bin_edges01 = np.histogram(np.array(self.dataArray['01']),
-                                                bins=bins_sync,
-                                                range=[-12.5, rmax+13])
-            histo02, bin_edges02 = np.histogram(np.array(self.dataArray['02']),
-                                                bins=bins_sync,
-                                                range=[0, rmax])
-            histo12, bin_edges12 = np.histogram(np.array(self.dataArray['12']),
-                                                bins=bins_chn,
-                                                range=[(rmax//2+12.5),
-                                                       rmax//2+12.5])
-            # Saving all 3 hist at once
-            # bincenters01/02  histo01  histo02  bincenters12  histo12
-            histos = np.array([0.5*(bin_edges01[1:]+bin_edges01[:-1]),
-                               histo01, histo02,
-                               0.5*(bin_edges12[1:]+bin_edges12[:-1]),
-                               histo12])
-            np.savetxt(outputFileName+'.hst', histos.T, fmt='%10i',
-                       header="histos \n bin\tsync-1\tsync-2\tbin\tchn1-chn2",
-                       comments='#', delimiter='\t')
+        rmax = int(self.timeGate)
+        # We want bins centered on multiple of 25ps
+        bins_sync = np.arange(-12.5, rmax+13, 25)
+        bins_chn = np.arange(-(rmax//2+12.5), rmax//2+13, 25)
+        histo01, bin_edges01 = np.histogram(np.array(self.dataArray['01']),
+                                            bins=bins_sync,
+                                            range=[-12.5, rmax+13])
+        histo02, bin_edges02 = np.histogram(np.array(self.dataArray['02']),
+                                            bins=bins_sync,
+                                            range=[0, rmax])
+        histo12, bin_edges12 = np.histogram(np.array(self.dataArray['12']),
+                                            bins=bins_chn,
+                                            range=[(rmax//2+12.5),
+                                                   rmax//2+12.5])
+        # Saving all 3 hist at once
+        # bincenters01/02  histo01  histo02  bincenters12  histo12
+        histos = np.array([0.5*(bin_edges01[1:]+bin_edges01[:-1]),
+                           histo01, histo02,
+                           0.5*(bin_edges12[1:]+bin_edges12[:-1]),
+                           histo12])
+        np.savetxt(outputFileName+'.hst', histos.T, fmt='%10i',
+                   header="histos \n bin\tsync-1\tsync-2\tbin\tchn1-chn2",
+                   comments='#', delimiter='\t')
 
     def _gotPhoton(self, recNum, timeTag, channel, dtime):
         """

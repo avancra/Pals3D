@@ -237,10 +237,6 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
                 self.sortingWorker.kwargs["timeRes"] = self.timeGate511
             else:
                 self.sortingWorker.kwargs["timeRes"] = None
-            if self.T2doHistChk.isChecked():
-                self.sortingWorker.kwargs["doHist"] = True
-            else:
-                self.sortingWorker.kwargs["doHist"] = False
 
             # threads:
             self.acqThread = T2AcquisitionThread(self.th260, self.acqNoFiles)
@@ -352,8 +348,6 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         self.settings.setValue('T2filePath',
                                os.path.dirname(self.T2filename))
         self.settings.setValue('T2filename', self.T2filename)
-        self.settings.setValue('T2doHist',
-                               self.T2doHistChk.isChecked())
 
     def restaureSettings(self):
         """Load the default values for CFD and acquisition settings"""
@@ -380,8 +374,6 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
         self.T2modeDouble.setChecked(
                 self.settings.value('T2modeDouble', type=bool))
-        self.T2doHistChk.setChecked(
-                self.settings.value('T2doHist', type=bool))
 
         self.T2acqTimePerFileValue.setValue(
                 self.settings.value('T2acqTimePerFileValue', type=int))
