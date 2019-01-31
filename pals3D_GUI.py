@@ -26,6 +26,8 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
+        self.T2applySetBtn.setEnabled(False)
+        self.T2startBtn.setEnabled(False)
         self.settings = QtCore.QSettings('Aalto-Antimatter', 'Pals3D')
 
         self.th260 = th260controller.TH260Controller()
@@ -60,7 +62,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
                                 type=QtCore.Qt.QueuedConnection)
         self.th260.ACQ_ENDED.connect(self.sortingWorker.processLastEvents,
                                      type=QtCore.Qt.QueuedConnection)
-        self.th260.DEVINIT.connect(self.countRatesTimer.start)
+        self.th260.DEVINIT.connect(self.devInit)
         self.th260.UPDATECountRate.connect(self.updateCountRates)
 #        self.th260.ERROR.connect()
 
@@ -73,9 +75,20 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         self.fetchSettings("T2")
 
         self.initWk = TH260Thread(self.th260.initialization)
+        self.statusbar.showMessage('Initialization of the device ...')
         self.threadpool.start(self.initWk)
 
+
+
     # ------ Slots and GUI logic ------#
+    @QtCore.pyqtSlot()
+    def devInit(self):
+        self.countRatesTimer.start()
+        self.statusbar.clearMessage()
+        self.statusbar.showMessage('Device initialized, ready to use', 30000)
+        self.T2applySetBtn.setEnabled(True)
+        self.T2startBtn.setEnabled(True)
+
     @QtCore.pyqtSlot()
     def updateCountRates(self):
         """Update the display of the count rate widgets"""
@@ -248,6 +261,9 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
             self.countRatesTimer.stop()
             self.acqThread.start()
 
+            self.progStatus = QtWidgets.QLabel(
+                    'Acq progress: {} s of the file no{}'.format(0,0))
+            self.statusbar.addPermanentWidget(self.progStatus)
             ut.disableChildOf(self.T2acqGrp, self.T2stopBtn)
             ut.disableChildOf(self.T2settingsGrp)
 

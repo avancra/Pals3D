@@ -72,7 +72,7 @@ class TH260Controller(QtCore.QObject):
     ACQ_ENDED : None
         Signal send to the sorter worker to force the sorting of last
         events.
-    DEVINIT : bool
+    DEVINIT : None
         Sent by the initialization method when the device is
         successfuly initialised.
     UPDATECountRate : None
@@ -129,7 +129,7 @@ class TH260Controller(QtCore.QObject):
     DATA = QtCore.pyqtSignal(object, int)
     ERROR = QtCore.pyqtSignal(tuple)
     ACQ_ENDED = QtCore.pyqtSignal()
-    DEVINIT = QtCore.pyqtSignal(bool)
+    DEVINIT = QtCore.pyqtSignal()
     UPDATECountRate = QtCore.pyqtSignal()
 
     def __init__(self):
@@ -276,7 +276,7 @@ class TH260Controller(QtCore.QObject):
         Initialize communication with TH260 pico card
 
         When initializationg is successfuly done, emit a DEVINIT
-        signal with a True value.
+        signal.
         """
         self.NEW_OUTPUT.emit("\nInitializing the device...")
         # with internal clock
@@ -299,7 +299,7 @@ class TH260Controller(QtCore.QObject):
                      "GetNumOfInputChannels")
         self.NEW_OUTPUT.emit("Device has %i input channels."
                              % self.numChannels.value)
-        self.DEVINIT.emit(True)
+        self.DEVINIT.emit()
 
     def configureSetting(self):
         """
