@@ -13,6 +13,7 @@
 # Keno Goertz, PicoQuant GmbH, February 2018
 
 from collections import deque
+import time
 
 from PyQt5 import QtCore
 import numpy as np
@@ -109,10 +110,11 @@ class SortingWorker(QtCore.QObject):
         self.timeGate = self.kwargs["timeGate"]
         self.timeRes = self.kwargs["timeRes"]
         self.file = self.kwargs["filename"]
+        self.cfd = self.kwargs["CFDset"]
         self.oflcorrection = 0
         self.islastEvent = False
 
-    def saveData(self, noFile):
+    def saveData(self, noFile, **kwargs):
         """
         Do histogramming of the whole data set and save to files
 
@@ -163,7 +165,34 @@ class SortingWorker(QtCore.QObject):
                            0.5*(bin_edges12[1:]+bin_edges12[:-1]),
                            histo12])
         np.savetxt(outputFileName+'.hst', histos.T, fmt='%10i',
-                   header="histos \n bin\tsync-1\tsync-2\tbin\tchn1-chn2",
+                   header=("Measurement date : {0}"
+                           "\nCFD settings:"
+                           "\nChannel |\tCFD ZeroCross |\tCFD level |\tOfsset"
+                           "\nSync: \t{z0} mV \t{l0} mV \t{o0} ps"
+                           "\nChn1: \t{z1} mV \t{l1} mV \t{o1} ps"
+                           "\nChn2: \t{z2} mV \t{l2} mV \t{o2} ps"
+                           "\nAcquisition settings:"
+                           "\nMode: {m} \tlong gate: {lg} ps"
+                                         "\tshort gate: {sg} ps"
+                           "\nAcquisition time: {at} min"
+                                   "\t file #{nf} out of {nftot}"
+                           "\n\ntime\tsync-1\tsync-2\ttime\tchn1-chn2")
+                       .format(time.asctime(),
+                           z0=self.cfd['zero0'],
+                           l0=self.cfd['lev0'],
+                           o0=self.cfd['off0'],
+                           z1=self.cfd['zero1'],
+                           l1=self.cfd['lev1'],
+                           o1=self.cfd['off1'],
+                           z2=self.cfd['zero2'],
+                           l2=self.cfd['lev2'],
+                           o2=self.cfd['off2'],
+                           m=self.sortingType,
+                           lg=self.timeGate,
+                           sg=self.timeRes,
+                           at=self.kwargs['acqTime'],
+                           nf=noFile+1,
+                           nftot=self.kwargs['nftot']),
                    comments='#', delimiter='\t')
 
     def _gotPhoton(self, recNum, timeTag, channel, dtime):

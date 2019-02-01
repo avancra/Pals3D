@@ -71,14 +71,13 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         self.th260.searchDevices()
         self.setupWidgetLimits()
 
+        self.T2settingDict = {}
         self.restaureSettings()
         self.fetchSettings("T2")
 
         self.initWk = TH260Thread(self.th260.initialization)
         self.statusbar.showMessage('Initialization of the device ...')
         self.threadpool.start(self.initWk)
-
-
 
     # ------ Slots and GUI logic ------#
     @QtCore.pyqtSlot()
@@ -105,13 +104,35 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         else:
             self.rateTripleValue.display(self.rateTripleValue.value() + count)
 
+    @QtCore.pyqtSlot(str, int)
+    def updateProgress(self, mode, prog):
+        """
+        Update the display of the acquisition progress bars
+
+        Parameters:
+        -----------
+        mode : str
+            'file' or 'acq'
+        prog : int
+            for mode = 'file' time elapsed since the acquisition starts
+
+            for mode = 'acq' number of file recorded up to now
+        """
+        if mode == "file":
+            progRatio = prog*100/self.th260.tacq
+            self.acqProgFileBar.setValue(progRatio)
+        if mode == "acq":
+            progRatio = prog*100/self.acqNoFiles
+            self.acqProgBar.setValue(progRatio)
+
     @QtCore.pyqtSlot()
     def on_T2filenameBtn_clicked(self):
         """Open a file dialog to select a destination file"""
         self.T2filename, _ = QtWidgets.QFileDialog.getSaveFileName(
                 self, caption="choose a file",
                 directory=self.T2defaultFileDir,
-                filter="PTU files (*.ptu);;All files (*.*)")
+                filter="""Histogram files (*.hst);;Numpy files(*.npy);;
+                          All files (*.*)""")
         self.T2filenameValue.setText(self.T2filename)
 
     @QtCore.pyqtSlot(int)
@@ -241,6 +262,10 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         if mode == "T2":
             self.th260.configureSetting()
             # sorting worker:
+            self.sortingWorker.kwargs["nftot"] = self.acqNoFiles
+            self.sortingWorker.kwargs["CFDset"] = self.T2settingDict
+            # TODO: change back to /60000
+            self.sortingWorker.kwargs["acqTime"] = self.th260.tacq/1000
             self.sortingWorker.kwargs["filename"] = self.T2filename
             self.sortingWorker.kwargs["sortingType"] = "3C"\
                 if self.T2modeTriple.isChecked()\
@@ -261,32 +286,8 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
             self.countRatesTimer.stop()
             self.acqThread.start()
 
-            self.progStatus = QtWidgets.QLabel(
-                    'Acq progress: {} s of the file no{}'.format(0,0))
-            self.statusbar.addPermanentWidget(self.progStatus)
             ut.disableChildOf(self.T2acqGrp, self.T2stopBtn)
             ut.disableChildOf(self.T2settingsGrp)
-
-    @QtCore.pyqtSlot(str, int)
-    def updateProgress(self, mode, prog):
-        """
-        Update the display of the acquisition progress bars
-
-        Parameters:
-        -----------
-        mode : str
-            'file' or 'acq'
-        prog : int
-            for mode = 'file' time elapsed since the acquisition starts
-
-            for mode = 'acq' number of file recorded up to now
-        """
-        if mode == "file":
-            progRatio = prog*100/self.th260.tacq
-            self.acqProgFileBar.setValue(progRatio)
-        if mode == "acq":
-            progRatio = prog*100/self.acqNoFiles
-            self.acqProgBar.setValue(progRatio)
 
     @QtCore.pyqtSlot()
     def on_T2stopBtn_clicked(self):
@@ -312,7 +313,6 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
     def fetchSettings(self, mode):
         """Get the CFD settings for each channel from the GUI widgets"""
-
         if mode is "T2":
             self.th260.syncCFDLevel = self.T2syncLevelValue.value()
             self.th260.syncCFDZeroCross = self.T2syncZeroValue.value()
@@ -323,8 +323,15 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
             self.th260.inputCFDZeroCross[1] = self.T2chn2ZeroValue.value()
             self.th260.inputOffset[0] = self.T2chn1OffsetValue.value()
             self.th260.inputOffset[1] = self.T2chn2OffsetValue.value()
-
-        return False, None
+            self.T2settingDict['lev0'] = self.th260.syncCFDLevel
+            self.T2settingDict['zero0'] = self.th260.syncCFDZeroCross
+            self.T2settingDict['off0'] = self.th260.syncOffset
+            self.T2settingDict['lev1'] = self.th260.inputCFDLevel[0]
+            self.T2settingDict['zero1'] = self.th260.inputCFDZeroCross[0]
+            self.T2settingDict['off1'] = self.th260.inputOffset[0]
+            self.T2settingDict['lev2'] = self.th260.inputCFDLevel[1]
+            self.T2settingDict['zero2'] = self.th260.inputCFDZeroCross[1]
+            self.T2settingDict['off2'] = self.th260.inputOffset[1]
 
     def saveSettings(self):
         """Store the currents CFD settings as default values"""
