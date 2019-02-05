@@ -1,0 +1,30 @@
+th260 package
+=============
+
+Submodules
+----------
+
+th260\.th260controller module
+-----------------------------
+
+.. automodule:: th260.th260controller
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+th260\.th260sorter module
+-------------------------
+
+.. automodule:: th260.th260sorter
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: th260
+    :members:
+    :undoc-members:
+    :show-inheritance:
