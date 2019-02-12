@@ -297,6 +297,7 @@ class TH260Controller(QtCore.QObject):
                      ct.c_int(self.dev[0]),
                      byref(self.numChannels)),
                      "GetNumOfInputChannels")
+
         self.NEW_OUTPUT.emit("Device has %i input channels."
                              % self.numChannels.value)
         self.DEVINIT.emit()
@@ -362,6 +363,15 @@ class TH260Controller(QtCore.QObject):
         # After Init or SetSyncDiv allow 150 ms for valid count rate readings
         time.sleep(0.15)
 
+        # Initial call to TH260GetWarings to discard the initial value
+        # The warnings are accumulated in an internal variable but
+        # that variable is not initialized to zero at the beginning.
+        # It is only reset to 0 when you call TH260_GetWarnings.
+        self.tryfunc(self.TH260LIB.TH260_GetWarnings(
+                     ct.c_int(self.dev[0]),
+                     byref(self.warnings)),
+                     "GetWarnings")
+
         self.getCountRates()
         self.NEW_OUTPUT.emit("\nCountrate[sync]=%1d/s" % self.countRates[0])
         self.NEW_OUTPUT.emit("Countrate[chn 1]=%1d/s" % (self.countRates[1]))
@@ -411,7 +421,7 @@ class TH260Controller(QtCore.QObject):
         Output messages and countrates are also sent over signals.
         """
         # TODO: clean up a bit
-        self.NEW_OUTPUT.emit("Starting data collection...\n")
+        self.NEW_OUTPUT.emit("\nStarting data collection...")
 
         progress = 0
         # Uncomment following 2 lines in case of console oupput
@@ -480,7 +490,7 @@ class TH260Controller(QtCore.QObject):
                 if self.ctcstatus.value > 0:
                     self.ACQ_ENDED.emit()
                     self.NEW_OUTPUT.emit(
-                            "\nMeasurement ended normally with {} events"
+                            "Measurement ended at event # {}"
                             .format(progress))
                     self.tryfunc(self.TH260LIB.TH260_StopMeas(
                                  ct.c_int(self.dev[0])),

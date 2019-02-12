@@ -29,7 +29,7 @@ class SortingWorker(QtCore.QObject):
     and sorting data. Can then be easily used in a GUI application
 
     Attributes:
-    ----------
+    -----------
     dataArray : dict
     dataDeck : deque
     islastEvent : bool
@@ -54,7 +54,7 @@ class SortingWorker(QtCore.QObject):
         Decode buffer individual events to produce a time tagged event
 
     Supported signals:
-    -----------------
+    ------------------
     COINCRATE : int
         Number of coincidence events during one acquisition
     NEW_OUTPUT : str
@@ -167,17 +167,17 @@ class SortingWorker(QtCore.QObject):
         np.savetxt(outputFileName+'.hst', histos.T, fmt='%10i',
                    header=("Measurement date : {0}"
                            "\nCFD settings:"
-                           "\nChannel |\tCFD ZeroCross |\tCFD level |\tOfsset"
+                           "\nChannel |\tCFD ZeroCross |\tCFD level |\tOffset"
                            "\nSync: \t{z0} mV \t{l0} mV \t{o0} ps"
                            "\nChn1: \t{z1} mV \t{l1} mV \t{o1} ps"
                            "\nChn2: \t{z2} mV \t{l2} mV \t{o2} ps"
                            "\nAcquisition settings:"
                            "\nMode: {m} \tlong gate: {lg} ps"
-                                         "\tshort gate: {sg} ps"
-                           "\nAcquisition time: {at} min"
-                                   "\t file #{nf} out of {nftot}"
+                           "\tshort gate: {sg} ps"
+                           "\nAcquisition time: {at} min"  # TODO :format int
+                           "\t file #{nf} out of {nftot}"
                            "\n\ntime\tsync-1\tsync-2\ttime\tchn1-chn2")
-                       .format(time.asctime(),
+                   .format(time.asctime(),
                            z0=self.cfd['zero0'],
                            l0=self.cfd['lev0'],
                            o0=self.cfd['off0'],

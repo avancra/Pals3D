@@ -9,6 +9,7 @@ for use with positron annihilation lifetime spectroscpoy
 import sys
 import traceback
 import os.path
+import time
 
 from PyQt5 import QtWidgets, QtCore
 
@@ -119,11 +120,18 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
             for mode = 'acq' number of file recorded up to now
         """
         if mode == "file":
+            self.progFileTime = prog
             progRatio = prog*100/self.th260.tacq
             self.acqProgFileBar.setValue(progRatio)
         if mode == "acq":
+            self.progAcqNumber = prog
             progRatio = prog*100/self.acqNoFiles
             self.acqProgBar.setValue(progRatio)
+        self.progStatus.setText('Progress: {}min/{} of the file no {}/{}'
+                             .format(self.progFileTime/1000,
+                                     self.th260.tacq/1000,
+                                     self.progAcqNumber,
+                                     self.acqNoFiles))
 
     @QtCore.pyqtSlot()
     def on_T2filenameBtn_clicked(self):
@@ -133,6 +141,8 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
                 directory=self.T2defaultFileDir,
                 filter="""Histogram files (*.hst);;Numpy files(*.npy);;
                           All files (*.*)""")
+        # TODO: warn overwrite of the files
+        # use Qmessage box
         self.T2filenameValue.setText(self.T2filename)
 
     @QtCore.pyqtSlot(int)
@@ -259,6 +269,8 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         self.acqProgFileBar.setValue(0)
         self.rateDoubleValue.display(0)
         self.rateTripleValue.display(0)
+        self.progFileTime = 0
+        self.progAcqNumber = 0
         if mode == "T2":
             self.th260.configureSetting()
             # sorting worker:
@@ -281,22 +293,41 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
             self.acqThread.globProgress.connect(self.updateProgress)
             self.acqThread.newMeas.connect(self.sortingWorker.newMeasurement)
             self.acqThread.fileDone.connect(self.sortingWorker.saveData)
+            self.acqThread.measDone.connect(self.measEnded)
 
             self.sortingThread.start()
             self.countRatesTimer.stop()
             self.acqThread.start()
 
+            self.statusbar.showMessage('Measurement running ...')
+            self.progStatus = QtWidgets.QLabel('Progress: {}min/X of the file no{}/N'
+                                               .format(self.progFileTime,
+                                                       self.progAcqNumber))
+            self.statusbar.addPermanentWidget(self.progStatus)
             ut.disableChildOf(self.T2acqGrp, self.T2stopBtn)
             ut.disableChildOf(self.T2settingsGrp)
 
     @QtCore.pyqtSlot()
-    def on_T2stopBtn_clicked(self):
-        """Stop the TTTR measurement and enable acq/settings widgets"""
+    def measEnded(self):
+        self.statusbar.removeWidget(self.progStatus)
+        self.statusbar.showMessage("The measurement has ended normally",
+                                   30000)
         ut.enableChildOf(self.T2acqGrp)
         ut.enableChildOf(self.T2settingsGrp)
 
-        self.countRatesTimer.stop()
+    @QtCore.pyqtSlot()
+    def on_T2stopBtn_clicked(self):
+        """Stop the TTTR measurement and enable acq/settings widgets"""
+        self.acqThread.requestInterruption()
         self.th260.stoptttr()
+        time.sleep(0.1)
+        self.statusbar.removeWidget(self.progStatus)
+        self.statusbar.showMessage('Last measurement stopped at {} min of the file no {}'
+                                   .format(self.progFileTime/1000,  # Back to 60000
+                                           self.progAcqNumber+1))
+        ut.enableChildOf(self.T2acqGrp)
+        ut.enableChildOf(self.T2settingsGrp)
+
         self.countRatesTimer.start()
 
     def fetchAcqSettings(self, mode):
@@ -576,14 +607,18 @@ class T2AcquisitionThread(QtCore.QThread):
         super(T2AcquisitionThread, self).__init__()
         self.th260device = dev
         self.noFiles = noFiles
+        self.abort = False
 
     def run(self):
-
         for nof in range(self.noFiles):
+            if self.isInterruptionRequested():
+                return
             self.newMeas.emit(nof)
             self.th260device.startAcquisition()
             self.fileDone.emit(nof)
             self.globProgress.emit("acq", nof+1)
+        self.measDone.emit()
+
         self.exec_()
         self.__init__(self.th260device, self.noFiles)
 

@@ -50,7 +50,7 @@ def disableChildOf(widget, exceptThis=None):
     Disable all the interactive widgets of a group/parent
 
     parameters:
-    ------
+    -----------
     widget : QtWidget name, e.g. self.widgetName
         parent/group widget name for which all members will be disabled
     exceptThis : QtWidget name, e.g. self.widgetName
@@ -71,7 +71,7 @@ def enableChildOf(widget, exceptThis=None):
     Enable all the interactive widgets of a group/parent
 
     parameters:
-    ------
+    -----------
     widget : QtWidget name, e.g. self.widgetName
         parent/group widget name for which all members will be enabled
     exceptThis : QtWidget name, e.g. self.widgetName
