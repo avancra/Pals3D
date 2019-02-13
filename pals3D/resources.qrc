@@ -1,0 +1,6 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource>
+        <file>icons/warning.png</file>
+	<file>icons/ok.png</file>
+    </qresource>
+</RCC>
