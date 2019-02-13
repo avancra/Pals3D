@@ -6,6 +6,8 @@
 Welcome to Pals3D's documentation!
 ==================================
 
+Pals3D is a graphical application to support the use of a Time-Correlated Single Photon Counting system for application to Positron Annihilation Lifetime Spectroscopy.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

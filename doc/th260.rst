@@ -4,6 +4,8 @@ th260 package
 Submodules
 ----------
 
+.. _th260-contr-sect:
+
 th260\.th260controller module
 -----------------------------
 
