@@ -583,9 +583,62 @@
      <height>20</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuMenu">
+    <property name="title">
+     <string>Menu</string>
+    </property>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionDLL_version"/>
+    <addaction name="actionPals3D_version"/>
+    <addaction name="actionPalss3D_help"/>
+   </widget>
+   <addaction name="menuMenu"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="toolTip">
+    <string>Close connection to device and exit</string>
+   </property>
+   <property name="statusTip">
+    <string>Close connection to device and exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionDLL_version">
+   <property name="text">
+    <string>DLL version</string>
+   </property>
+  </action>
+  <action name="actionPals3D_version">
+   <property name="text">
+    <string>Pals3D version</string>
+   </property>
+  </action>
+  <action name="actionPalss3D_help">
+   <property name="text">
+    <string>Pals3D help</string>
+   </property>
+   <property name="toolTip">
+    <string>Open the online documentation</string>
+   </property>
+   <property name="statusTip">
+    <string>Open the online documentation</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
