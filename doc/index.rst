@@ -13,6 +13,7 @@ Pals3D is a graphical application to support the use of a Time-Correlated Single
    :caption: Contents:
 
    purpose
+   palsBrief
    hardware
    features
    software

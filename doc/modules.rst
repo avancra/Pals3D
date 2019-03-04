@@ -1,4 +1,4 @@
-pals3D
+Pals3D
 ======
 
 .. toctree::

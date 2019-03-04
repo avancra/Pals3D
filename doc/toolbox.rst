@@ -1,8 +1,6 @@
 toolbox package
 ===============
 
-Submodules
-----------
 
 toolbox\.plotting module
 ------------------------
@@ -20,11 +18,3 @@ toolbox\.utils module
     :undoc-members:
     :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: toolbox
-    :members:
-    :undoc-members:
-    :show-inheritance:

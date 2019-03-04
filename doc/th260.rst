@@ -1,9 +1,6 @@
 th260 package
 =============
 
-Submodules
-----------
-
 .. _th260-contr-sect:
 
 th260\.th260controller module
@@ -14,6 +11,8 @@ th260\.th260controller module
     :undoc-members:
     :show-inheritance:
 
+.. _th260-sorter-sect:
+
 th260\.th260sorter module
 -------------------------
 
@@ -22,11 +21,3 @@ th260\.th260sorter module
     :undoc-members:
     :show-inheritance:
 
-
-Module contents
----------------
-
-.. automodule:: th260
-    :members:
-    :undoc-members:
-    :show-inheritance:

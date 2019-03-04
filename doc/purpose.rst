@@ -5,20 +5,19 @@ Purpose
 Introduction
 ============
 
-The Pals3D software has been designed to support the use of a PicoQuant Time-Correlated Single Photon Counting (TCSPC) system for application to Positron Annihilation Lifetime Spectroscopy (PALS).
-
-PALS in brief
-=============
+The Pals3D software is meant for performing Positron Annihilation Lifetime Spectroscopy measurements with two different modes for double and triple coincidences. It is designed to support the use of a PicoQuant Time-Correlated Single Photon Counting (TCSPC) TimeHarp 260 Pico PCIe card as acquisition system. The TimeHarp 260 (TH260) allows the accurate determination of arrival times of photons with high counting rates. Timestamped events are then filtered and sorted to produce lifetime spectrum histograms as output files, that could be further processed by dedicated tools for lifetime extraction (not provided by Pals3D).
 
 
 .. _install-sect:
 
 Installation
 ==============
+Coming soon..
 
 Requirements
 ------------
-through a packaging?
+.. todo::
+    packaging
 
 
 
@@ -44,4 +43,4 @@ License
 
 
 **Firmware**
-  The PicoQuant DLL is not included with the current software and has to be ordered from PicoQuant directly.
+  The PicoQuant DLL is not included with the current software and is subject to its own License and restriction. It can be purchase from PicoQuant directly together with the TimeHarp 260 system.
