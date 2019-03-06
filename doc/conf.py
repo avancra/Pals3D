@@ -112,6 +112,8 @@ html_sidebars = {
     ]
 }
 
+html_logo = 'figures/logoPals3D.png'
+html_favicon = 'figures/iconPals3D.ico'
 
 # -- Options for HTMLHelp output ------------------------------------------
 

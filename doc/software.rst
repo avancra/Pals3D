@@ -48,9 +48,6 @@ The details of the acquisition is also set in this panel. The user chooses an *a
 
 The name of the output file is entered in the *Output file name* field either using the **Pick a file** button or manually. The default extension is *.hst* but at this point it does not matter since the filename entered here will be stripped from its extension if any and a *.hst* or *.npy* extension will be added automatically later on (together with the acquisition number). The name selected here should then be considered as a filename base that will be used as the common basis for all output files of the current acquisition.
 
-.. warning::
-   Be extra cautious in the choice of the filename as there is currently no check overwrite of the files.
-
 The acquisition parameters will be saved as default through QSettings at each starting of a new measurement series. When later starting a new instance of the application the acquisition parameters will be loaded from the last measurement performed.
 
 .. prog-panel-sect:
