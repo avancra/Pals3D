@@ -28,8 +28,13 @@ class SortingWorker(QtCore.QObject):
     Inherit from QObect to use Qt signal and slot logic for receiving
     and sorting data. Can then be easily used in a GUI application
 
-    Attributes:
-    -----------
+    Parameters
+    ----------
+    kwargs : kwargs
+        Keyword arguments passed from the main thread
+
+    Attributes
+    ----------
     dataArray : dict
     dataDeck : deque
     islastEvent : bool
@@ -37,42 +42,32 @@ class SortingWorker(QtCore.QObject):
     resultArray_01 : list
     resultArray_02 : list
     resultArray_12 : list
-    kwargs :
 
-    Methods:
-    --------
-    newMeasurement(noFile):
-        Initialise class attributes for new measurement
-    saveData(noFile):
-        Do histogramming of the whole data set and save to files
-    processLastEvents()
-        Force the processing of the last events to empty dataDeck
-    sortDeck()
-        Check if the data deque is full to start the sorting according
-        to the sortingType ('2C' or '3C')
-    sortBuffer(buffer, nrecords)
-        Decode buffer individual events to produce a time tagged event
-
-    Supported signals:
-    ------------------
-    COINCRATE : int
-        Number of coincidence events during one acquisition
-    NEW_OUTPUT : str
-        message to be printed in a console or GUI output
-
-    Class Constants:
-    ----------------
-    T2WRAPAROUND_V1 = 33552000 ;
-    T2WRAPAROUND_V2 = 33554432 ;
-    VERSION = 2
+    Keyword Args
+    ------------
+    sortingType : str
+        '2C' or '3C'
+    timeGate : int
+        Long time gate for positron lifetime (in ps)
+    timeRes : int
+        Short time gate for 511 MeV photons (in ps)
+    filename : str
+        Filename base for output file
+    CFDset : dict
+        Dictionnary of all the CFD settings for all channels
+    acqTime : int
+        Acquisition time (in min)
+    nftot : int
+        Total number of files during current measurement
 
     """
-    COINCRATE = QtCore.pyqtSignal(int)
-    NEW_OUTPUT = QtCore.pyqtSignal(str)
 
-    T2WRAPAROUND_V1 = 33552000
-    T2WRAPAROUND_V2 = 33554432
-    VERSION = 2
+    COINCRATE = QtCore.pyqtSignal(int)  #: :obj:pyqtSignal(int)
+    NEW_OUTPUT = QtCore.pyqtSignal(str)  #: :obj:pyqtSignal(str)
+
+    T2WRAPAROUND_V1 = 33552000  #: int : Wraparound for version 1
+    T2WRAPAROUND_V2 = 33554432  #: int : Wraparound for version 2
+    VERSION = 2  #: int: Version ==> remove?
 
     def __init__(self, **kwargs):
         """Constructor method of the TH260sorter class"""
@@ -93,8 +88,8 @@ class SortingWorker(QtCore.QObject):
         """
         Initialise class attributes for new measurement
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         noFile : int
             File numero in case of multiple file acquisition
 
@@ -116,8 +111,8 @@ class SortingWorker(QtCore.QObject):
         """
         Do histogramming of the whole data set and save to files
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         noFile : int
             Numero of the current acquisition file to be appended to
             the filename base.
@@ -197,8 +192,8 @@ class SortingWorker(QtCore.QObject):
         """
         Append real photon events to dataDeck
 
-        parameters:
-        -----------
+        parameters
+        ----------
         recNum : int
             Record numero
         timeTag: int
@@ -246,8 +241,8 @@ class SortingWorker(QtCore.QObject):
         If so, store the time difference into the corresponding list
         of the dataArray dict.
 
-        Warnings:
-        ---------
+        Warnings
+        --------
         Note that we are looking at paires only, so in case of true
         triple coinc, we might miss the coinc between first and 3rd
         event. It doesn't matter for resolution with Co measurements,
@@ -357,8 +352,8 @@ class SortingWorker(QtCore.QObject):
         """
         Decode buffer individual events to produce a time tagged event
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         buffer : object - ctype array buffer
             Raw data buffer received over a signal from the acquisition
             thread.

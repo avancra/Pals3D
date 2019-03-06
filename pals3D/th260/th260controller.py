@@ -29,78 +29,7 @@ class TH260Controller(QtCore.QObject):
     slots logic to communicate between thread workers (usually a GUI
     application and a sorter worker).
 
-    Methods:
-    --------
-    closeDevices()
-         Close the currently opened devices
-    tryfunc( retcode, funcName, measRunning = False)
-        Check for errors when executing a function
-    searchDevices()
-        Search and list available devices on the host computer
-    initialization()
-        Initialize communication with TH260 pico card
-    configureSetting()
-        Set the card paramaters before starting a measurement
-    getCountRates()
-        Get the count rates for each channels and store them
-    stoptttr()
-        Stop the ongoing TTTR measurement
-    startAcquisition()
-        Start data collection with current settings
-
-    Supported signals:
-    -----------------
-    NEW_OUTPUT : str
-        message to be printed in a console or GUI output
-    WARNING : str
-        Warming messages for console output or message box in GUI
-    PROGRESS : str = 'file', int
-        Signal to share the progress status of the on-going acquisition.
-        The first argument should always be 'file' when use together
-        with the Pals3D GUI application. 'file' refer to the status of
-        a single acquisition file in opposition to 'acq' that relate
-        to the totale acquisition programm, and that is sent by the
-        acquisition worker of the GUI application.
-        This can be changed when used with an external application.
-    DATA : object, int
-        Signal to share data object with the sorter worker of TH260
-        module. The first argument is the data object itself, here a
-        c_type array buffer. The second argument is the number of records
-        contained in the data buffer.
-    ERROR : tuple
-        Not yet in use.
-    ACQ_ENDED : None
-        Signal send to the sorter worker to force the sorting of last
-        events.
-    DEVINIT : None
-        Sent by the initialization method when the device is
-        successfuly initialised.
-    UPDATECountRate : None
-        Sent to the GUI application to force the update of these values
-        in the GUI application.
-
-    Class Constants:
-    ----------------
-    These class constants are hardware limits for the TH260 Pico card.
-
-    LIB_VERSION = "3.1" ;
-    MAXDEVNUM = 4 ;
-    MODE_T2 = 2 ;
-    MODE_T3 = 3 ;
-    MAXLENCODE = 5 ;
-    MAXINPCHAN = 2 ;
-    TTREADMAX = 131072 ;
-    FLAG_OVERFLOW = 0x0001 ;
-    FLAG_FIFOFULL = 0x0002 ;
-    CFDLVLMIN = -1200 ;
-    CFDLVLMAX = 0 ;
-    CFDZCMIN = -40 ;
-    CFDZCMAX = 0 ;
-    CHANOFFSMIN = -99999 ;
-    CHANOFFSMAX = 99999 ;
-    ACQTMIN = 1	;
-    ACQTMAX = 360000000
-    """
+"""
 
     # Constants from the DLL th260defin.h
     LIB_VERSION = "3.1"
@@ -123,13 +52,45 @@ class TH260Controller(QtCore.QObject):
     TH260LIB = ct.CDLL("th260lib64.dll")
 
     # signals
+    #: obj: pyqtsignal(str) message to be printed in a console or GUI output
     NEW_OUTPUT = QtCore.pyqtSignal(str)
+
+    #: obj: pyqtsignal(str) Warming messages for message box in GUI
     WARNING = QtCore.pyqtSignal(str)
+
+    #: obj: pyqtsignal(str, int) Signal to share the progress status
+    #: of the on-going acquisition.
+    #: The first argument should always be 'file' when use together
+    #: with the Pals3D GUI application. 'file' refer to the status of
+    #: a single acquisition file in opposition to 'acq' that relate
+    #: to the totale acquisition programm, and that is sent by the
+    #: acquisition worker of the GUI application.
+    #: This can be changed when used with an external application.
     PROGRESS = QtCore.pyqtSignal(str, int)  # str = "file"
+
+    #: obj: pyqtsignal(obj, int)
+    #: Signal to share data object with the sorter worker of TH260
+    #: module. The first argument is the data object itself, here a
+    #: c_type array buffer. The second argument is the number of records
+    #: contained in the data buffer.
     DATA = QtCore.pyqtSignal(object, int)
+
+    #: obj: pyqtsignal(tuple)
+    #: Not yet in use.
     ERROR = QtCore.pyqtSignal(tuple)
+
+    #: obj: pyqtsignal()
+    #: Signal send to the sorter worker to force the sorting of last events.
     ACQ_ENDED = QtCore.pyqtSignal()
+
+    #: obj: pyqtsignal()
+    #: Sent by the initialization method when the device is
+    #: successfuly initialised.
     DEVINIT = QtCore.pyqtSignal()
+
+    #: obj: pyqtsignal()
+    #: Sent to the GUI application to force the update of these
+    #: values in the GUI application.
     UPDATECountRate = QtCore.pyqtSignal()
 
     def __init__(self):
@@ -139,7 +100,7 @@ class TH260Controller(QtCore.QObject):
         self.mode = self.MODE_T2
         # Following variables are only meaningfull when used
         # without a GUI, otherwise they are set through GUI
-        self.tacq = 60000               # Measurement time in millisec,
+        self.tacq = 60000               #: Measurement time in millisec,
         self.syncDivider = 1            # you can change this, READ MANUAL!
         self.syncCFDZeroCross = -10     # you can change this (in mV)
         self.syncCFDLevel = -30         # you can change this (in mV)
@@ -185,8 +146,8 @@ class TH260Controller(QtCore.QObject):
         Meant to be used as slot for the NEW_OUTPUT and WARNING signals
         when no other slot (e.g. GUI application) is defined.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         text : str
             Message to be printed to console output
 
@@ -208,7 +169,7 @@ class TH260Controller(QtCore.QObject):
         device.
 
         Parameters
-        -------
+        ----------
         retcode: int
             code return by the function funcName
             (0 = success, <0 = failed)
