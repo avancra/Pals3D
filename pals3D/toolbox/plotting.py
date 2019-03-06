@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Aug 23 11:17:57 2018
-
-(c) Aurelie Vancraeyenest 2018
-"""
+#
+# -------------------------------
+#
+# (c) Aurelie Vancraeyenest 2019
+# --------------------------------
+#
 
 import numpy as np
 import matplotlib.pyplot as plt

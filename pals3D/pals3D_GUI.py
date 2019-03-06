@@ -1,24 +1,32 @@
-# -*- coding: utf-8 -*-
-"""
-Data acquisition GUI for TimeHarp260 P
-for use with positron annihilation lifetime spectroscpoy
-
-(c) Aurelie Vancraeyenest 2018
-"""
+#
+# Data acquisition GUI for TimeHarp260 Pico
+# for use with positron annihilation lifetime spectroscpoy
+#
+# -------------------------------
+#
+# (c) Aurelie Vancraeyenest 2019
+# -------------------------------
+#
+# Based on demo code from:
+# Keno Goertz, PicoQuant GmbH, February 2018
+#
 
 import sys
 import traceback
 import os.path
 import time
+import webbrowser
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 import toolbox.utils as ut
 import acqGUI
-import th260controller
-import th260sorter
+from th260 import th260controller, th260sorter
 
 # put here visual ressources
+ICON_OK = ":/icons/ok.png"
+ICON_WARNING = ":/icons/warning.png"
+VERSION = '0.1'
 
 
 class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
@@ -30,6 +38,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         self.T2applySetBtn.setEnabled(False)
         self.T2startBtn.setEnabled(False)
         self.settings = QtCore.QSettings('Aalto-Antimatter', 'Pals3D')
+        self.warnings = 'No warnings'
 
         self.th260 = th260controller.TH260Controller()
         self.sortingWorker = th260sorter.SortingWorker()
@@ -57,7 +66,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
         # connecting signals to new slots:
         self.th260.NEW_OUTPUT.connect(self.printOutput)
-        self.th260.WARNING.connect(self.showWarning)
+        self.th260.WARNING.connect(self.updateWarning)
         self.th260.PROGRESS.connect(self.updateProgress)
         self.th260.DATA.connect(self.sortingWorker.sortBuffer,
                                 type=QtCore.Qt.QueuedConnection)
@@ -80,6 +89,18 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         self.statusbar.showMessage('Initialization of the device ...')
         self.threadpool.start(self.initWk)
 
+        self.warningBtn = QtWidgets.QPushButton()
+        self.warningBtn.setText('')
+        self.warningBtn.setMaximumSize(100, 100)
+        self.iconOk = QtGui.QIcon()
+        self.iconOk.addPixmap(QtGui.QPixmap(ICON_OK))
+        self.iconWarn = QtGui.QIcon()
+        self.iconWarn.addPixmap(QtGui.QPixmap(ICON_WARNING))
+        self.warningBtn.setIcon(self.iconOk)
+        self.warningBtn.clicked.connect(self.on_warningBtn_clicked)
+
+        self.statusbar.addPermanentWidget(self.warningBtn)
+
     # ------ Slots and GUI logic ------#
     @QtCore.pyqtSlot()
     def devInit(self):
@@ -88,6 +109,14 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         self.statusbar.showMessage('Device initialized, ready to use', 30000)
         self.T2applySetBtn.setEnabled(True)
         self.T2startBtn.setEnabled(True)
+
+    @QtCore.pyqtSlot(str)
+    def updateWarning(self, text):
+        self.warnings = text
+        if text == 'No warning':
+            self.warningBtn.setIcon(self.iconOk)
+        else:
+            self.warningBtn.setIcon(self.iconWarn)
 
     @QtCore.pyqtSlot()
     def updateCountRates(self):
@@ -127,11 +156,16 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
             self.progAcqNumber = prog
             progRatio = prog*100/self.acqNoFiles
             self.acqProgBar.setValue(progRatio)
-        self.progStatus.setText('Progress: {}min/{} of the file no {}/{}'
-                             .format(self.progFileTime/1000,
-                                     self.th260.tacq/1000,
-                                     self.progAcqNumber,
-                                     self.acqNoFiles))
+        self.progStatus.setText('Progress: {:.1f}/{:.0f}min'
+                                ' of the file no {}/{}'
+                                .format(self.progFileTime/60000,
+                                        self.th260.tacq/60000,
+                                        self.progAcqNumber,
+                                        self.acqNoFiles))
+
+    @QtCore.pyqtSlot()
+    def on_warningBtn_clicked(self):
+        self.showWarning(self.warnings)
 
     @QtCore.pyqtSlot()
     def on_T2filenameBtn_clicked(self):
@@ -141,25 +175,31 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
                 directory=self.T2defaultFileDir,
                 filter="""Histogram files (*.hst);;Numpy files(*.npy);;
                           All files (*.*)""")
-        # TODO: warn overwrite of the files
-        # use Qmessage box
         self.T2filenameValue.setText(self.T2filename)
 
     @QtCore.pyqtSlot(int)
     def on_T2chn1Chk_stateChanged(self, state):
         """Enable/disable corresponding widgets when clicked"""
-        if state == 0:   # Unchecked
-            ut.disableChildOf(self.T2chn1Frame)
-        if state == 2:  # Checked
-            ut.enableChildOf(self.T2chn1Frame)
+        pass
+        # Remove the pass statement above and uncomment the following
+        # lines when the code has been modified to handle the case when
+        # only one of the two channels is used in the acquisition
+#        if state == 0:   # Unchecked
+#            ut.disableChildOf(self.T2chn1Frame)
+#        if state == 2:  # Checked
+#            ut.enableChildOf(self.T2chn1Frame)
 
     @QtCore.pyqtSlot(int)
     def on_T2chn2Chk_stateChanged(self, state):
         """Enable/disable corresponding widgets when clicked"""
-        if state == 0:   # Unchecked
-            ut.disableChildOf(self.T2chn2Frame)
-        if state == 2:  # Checked
-            ut.enableChildOf(self.T2chn2Frame)
+        pass
+        # Remove the pass statement above and uncomment the following
+        # lines when the code has been modified to handle the case when
+        # only one of the two channels is used in the acquisition
+#        if state == 0:   # Unchecked
+#            ut.disableChildOf(self.T2chn2Frame)
+#        if state == 2:  # Checked
+#            ut.enableChildOf(self.T2chn2Frame)
 
     @QtCore.pyqtSlot(bool)
     def on_T2modeDouble_toggled(self, checked):
@@ -203,6 +243,11 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
     @QtCore.pyqtSlot()
     def on_T2startBtn_clicked(self):
         """Fetch settings for CFD and acquisition, then start measurement"""
+        self.T2filename = self.T2filenameValue.text()
+        try:
+            self.checkExistingFilename(self.T2filename)
+        except ValueError:
+            return
         self.fetchSettings("T2")
         self.printOutput(
                 """Measurement settings:\n
@@ -226,7 +271,6 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
                            chn2Offset=self.th260.inputOffset[1]))
 
         self.fetchAcqSettings("T2")
-        self.T2filename = self.T2filenameValue.text()
         self.printOutput(
             """Measurement settings:\n
             Acquisition time per file   : {acqTime} sec
@@ -240,8 +284,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
                        if self.T2modeTriple.isChecked()
                        else "None (2C mode)"))
 
-        # TODO: add the filename in the question
-        rep = self.showQuestion(""" Acquisition is about to start with:
+        answer = self.showQuestion(""" Acquisition is about to start with:
                             Acquisition time per file   : {acqTime} sec
                             Number of files             : {noFiles}
                             Time gate total             : {timeGate} ps
@@ -253,10 +296,10 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
                                        if self.T2modeTriple.isChecked()
                                        else "None (2C mode)"))
 
-        if rep == QtWidgets.QMessageBox.Ok:
+        if answer == QtWidgets.QMessageBox.Ok:
             self.startAcquisition("T2")
             pass
-        elif rep == QtWidgets.QMessageBox.Cancel:
+        elif answer == QtWidgets.QMessageBox.Cancel:
             return
 
     @QtCore.pyqtSlot()
@@ -276,8 +319,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
             # sorting worker:
             self.sortingWorker.kwargs["nftot"] = self.acqNoFiles
             self.sortingWorker.kwargs["CFDset"] = self.T2settingDict
-            # TODO: change back to /60000
-            self.sortingWorker.kwargs["acqTime"] = self.th260.tacq/1000
+            self.sortingWorker.kwargs["acqTime"] = self.th260.tacq/60000
             self.sortingWorker.kwargs["filename"] = self.T2filename
             self.sortingWorker.kwargs["sortingType"] = "3C"\
                 if self.T2modeTriple.isChecked()\
@@ -300,10 +342,11 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
             self.acqThread.start()
 
             self.statusbar.showMessage('Measurement running ...')
-            self.progStatus = QtWidgets.QLabel('Progress: {}min/X of the file no{}/N'
+            self.progStatus = QtWidgets.QLabel('Progress: {}min/X'
+                                               ' of the file no{}/N'
                                                .format(self.progFileTime,
                                                        self.progAcqNumber))
-            self.statusbar.addPermanentWidget(self.progStatus)
+            self.statusbar.insertPermanentWidget(0, self.progStatus)
             ut.disableChildOf(self.T2acqGrp, self.T2stopBtn)
             ut.disableChildOf(self.T2settingsGrp)
 
@@ -314,27 +357,67 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
                                    30000)
         ut.enableChildOf(self.T2acqGrp)
         ut.enableChildOf(self.T2settingsGrp)
+        self.countRatesTimer.start()
 
     @QtCore.pyqtSlot()
     def on_T2stopBtn_clicked(self):
         """Stop the TTTR measurement and enable acq/settings widgets"""
-        self.acqThread.requestInterruption()
-        self.th260.stoptttr()
-        time.sleep(0.1)
-        self.statusbar.removeWidget(self.progStatus)
-        self.statusbar.showMessage('Last measurement stopped at {} min of the file no {}'
-                                   .format(self.progFileTime/1000,  # Back to 60000
-                                           self.progAcqNumber+1))
+        try:
+            self.acqThread.requestInterruption()
+        except AttributeError:
+            self.showError("No thread to stop")
+        else:
+            self.th260.stoptttr()
+            time.sleep(0.1)
+            self.statusbar.removeWidget(self.progStatus)
+            self.statusbar.showMessage('Last measurement stopped at {}'
+                                       ' min of the file no {}'
+                                       .format(self.progFileTime/60000,
+                                               self.progAcqNumber+1))
         ut.enableChildOf(self.T2acqGrp)
         ut.enableChildOf(self.T2settingsGrp)
-
         self.countRatesTimer.start()
+
+    @QtCore.pyqtSlot()
+    def on_actionExit_triggered(self):
+        self.th260.closeDevices()
+        self.close()
+
+    @QtCore.pyqtSlot()
+    def on_actionDLL_version_triggered(self):
+        self.showMessage("Currently installed library version: {}\n"
+                         "\nPals3D has been developped using version: {}"
+                         .format(self.th260.libVersion.value.decode("utf-8"),
+                                 self.th260.LIB_VERSION))
+
+    @QtCore.pyqtSlot()
+    def on_actionPals3D_version_triggered(self):
+        self.showMessage("Current version of Pals3D: {}\n"
+                         .format(VERSION))
+
+    @QtCore.pyqtSlot()
+    def on_actionPalss3D_help_triggered(self):
+        webbrowser.open('https://github.com/avancra/Pals3D')
+
+    def checkExistingFilename(self, filename):
+        try:
+            filebase, extension = filename.rsplit(sep=".", maxsplit=1)
+        except ValueError:
+            filebase = filename
+
+        outputFileName = "".join((filebase,
+                                  '_000.hst'))
+        if os.path.isfile(outputFileName):
+            answer = self.showQuestion("Output file {} will be overwritten!\n"
+                                       "Do you want to continue?"
+                                       .format(outputFileName))
+            if answer == QtWidgets.QMessageBox.Cancel:
+                raise ValueError()
 
     def fetchAcqSettings(self, mode):
         """Get the acquisition settings from the GUI widgets"""
         if mode == "T2":
-            # TODO : change back to *60000
-            self.th260.tacq = self.T2acqTimePerFileValue.value()*1000  # *60000
+            self.th260.tacq = self.T2acqTimePerFileValue.value()*60000
             self.acqNoFiles = self.T2acqNoFilesValue.value()
             self.timeGate = self.T2timeGateLongValue.value()
             if self.T2modeTriple.isChecked():
@@ -465,7 +548,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         self.T2syncZeroValue.setMaximum(self.th260.CFDZCMAX)
         self.T2syncZeroValue.setMinimum(self.th260.CFDZCMIN)
         self.T2acqTimePerFileValue.setMaximum(self.th260.ACQTMAX/1000)  # in s
-        self.T2acqTimePerFileValue.setMinimum(self.th260.ACQTMIN/1000)  # in s
+        self.T2acqTimePerFileValue.setMinimum(self.th260.ACQTMIN)  # always 1
         self.T2acqNoFilesValue.setMaximum(6000)
         self.T2acqNoFilesValue.setMinimum(0)
         self.T2timeGateLongValue.setMaximum(20000)      # in ps
@@ -484,6 +567,27 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         """
         self.commandOutput.appendPlainText(text)
 
+    def showMessage(self, message):
+        """
+        Display "message" in a "Information" message box with 'OK' button.
+
+        Parameters:
+        -----------
+        message : 'str'
+            Message to be printed in the command output widget
+        """
+
+        messageBox = QtWidgets.QMessageBox()
+        messageBox.setText(message)
+        messageBox.setWindowTitle("Info")
+        messageBox.setIcon(QtWidgets.QMessageBox.Information)
+        messageBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        messageBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+
+        # Show the window
+        messageBox.raise_()
+        messageBox.exec_()
+
     def showError(self, message):
         """
         Display "message" in a "Critical error" message box with 'OK' button.
@@ -494,12 +598,9 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
             Message to be printed in the command output widget
         """
 
-        # Create a QMessagebox
         messageBox = QtWidgets.QMessageBox()
-
         messageBox.setText(message)
         messageBox.setWindowTitle("Error")
-#        messageBox.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(":/icons/grid.png")))
         messageBox.setIcon(QtWidgets.QMessageBox.Critical)
         messageBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
         messageBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
@@ -517,12 +618,11 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         message : 'str'
             Message to be printed in the command output widget
         """
-        # Create a QMessagebox
-        messageBox = QtWidgets.QMessageBox()
 
+        messageBox = QtWidgets.QMessageBox()
         messageBox.setText(message)
         messageBox.setWindowTitle("Warning")
-#        messageBox.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(":/icons/grid.png")))
+        messageBox.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(ICON_WARNING)))
         messageBox.setIcon(QtWidgets.QMessageBox.Warning)
         messageBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
         messageBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
@@ -544,7 +644,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
         self.messageBox = QtWidgets.QMessageBox()
         self.messageBox.setText(message)
         self.messageBox.setWindowTitle("Question")
-#        messageBox.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(":/icons/grid.png")))
+        self.messageBox.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(ICON_WARNING)))
         self.messageBox.setIcon(QtWidgets.QMessageBox.Warning)
         self.messageBox.setStandardButtons(QtWidgets.QMessageBox.Cancel
                                            | QtWidgets.QMessageBox.Ok)

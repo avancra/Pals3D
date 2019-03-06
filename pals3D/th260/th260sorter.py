@@ -1,16 +1,16 @@
-# -*- coding: utf-8 -*-
+#
 # TH260Sorter is meant to sort data from a PicoQuant TimeHarp 260 Pico
 # via TH260LIB.DLL v 3.1. for applications to positron annihilation
 # lifetime spectroscopy.
 #
-# The class is designed so it use PyQt signals and slots to
-# communicate between methods, so that it can be easily used with
-# threads and GUI.
+# -------------------------------
 #
-# (c) Aurelie Vancraeyenest 2018-2019
+# (c) Aurelie Vancraeyenest 2019
+# -------------------------------
 #
 # Based on demo code from:
 # Keno Goertz, PicoQuant GmbH, February 2018
+#
 
 from collections import deque
 import time
@@ -18,7 +18,7 @@ import time
 from PyQt5 import QtCore
 import numpy as np
 
-import toolbox.utils as ut
+from toolbox import utils as ut
 
 
 class SortingWorker(QtCore.QObject):
@@ -67,7 +67,6 @@ class SortingWorker(QtCore.QObject):
     VERSION = 2
 
     """
-    # TODO: Define here the signals
     COINCRATE = QtCore.pyqtSignal(int)
     NEW_OUTPUT = QtCore.pyqtSignal(str)
 
@@ -100,7 +99,6 @@ class SortingWorker(QtCore.QObject):
             File numero in case of multiple file acquisition
 
         """
-        # ???: QMutex here?
 
         self.dataDeck.clear()
         self.dataArray['01'] = list()
@@ -168,15 +166,15 @@ class SortingWorker(QtCore.QObject):
                    header=("Measurement date : {0}"
                            "\nCFD settings:"
                            "\nChannel |\tCFD ZeroCross |\tCFD level |\tOffset"
-                           "\nSync: \t{z0} mV \t{l0} mV \t{o0} ps"
-                           "\nChn1: \t{z1} mV \t{l1} mV \t{o1} ps"
-                           "\nChn2: \t{z2} mV \t{l2} mV \t{o2} ps"
+                           "\nSync \t {z0} mV \t {l0} mV \t{o0} ps"
+                           "\nChn1 \t {z1} mV \t {l1} mV \t{o1} ps"
+                           "\nChn2 \t {z2} mV \t {l2} mV \t{o2} ps"
                            "\nAcquisition settings:"
-                           "\nMode: {m} \tlong gate: {lg} ps"
-                           "\tshort gate: {sg} ps"
-                           "\nAcquisition time: {at} min"  # TODO :format int
-                           "\t file #{nf} out of {nftot}"
-                           "\n\ntime\tsync-1\tsync-2\ttime\tchn1-chn2")
+                           "\nMode: {m} |\t long gate: {lg} ps \t"
+                           "|\t short gate: {sg} ps"
+                           "\nAcquisition time: {at:.0f} min \t"
+                           "|\t file #{nf} out of {nftot}"
+                           "\n\ntime\tsync-1 \t sync-2 \t time \t chn1-chn2")
                    .format(time.asctime(),
                            z0=self.cfd['zero0'],
                            l0=self.cfd['lev0'],

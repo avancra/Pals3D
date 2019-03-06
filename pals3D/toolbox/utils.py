@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-
-(c) Aurelie Vancraeyenest 2018
-"""
+#
+# -------------------------------
+#
+# (c) Aurelie Vancraeyenest 2019
+# -------------------------------
+#
 
 import itertools
 from PyQt5 import QtWidgets

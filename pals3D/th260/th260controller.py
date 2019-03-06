@@ -1,16 +1,16 @@
-# -*- coding: utf-8 -*-
+#
 # TH260Controller is meant to access a PicoQuant TimeHarp 260 Pico
 # via TH260LIB.DLL v 3.1. for applications to positron annihilation
 # lifetime spectroscopy.
 #
-# The class is designed so it use PyQt signals and slots to
-# communicate between methods, so that it can be easily used with
-# threads and GUI.
+# -------------------------------
 #
-# (c) Aurelie Vancraeyenest 2018-2019
+# (c) Aurelie Vancraeyenest 2019
+# -------------------------------
 #
 # Based on demo code from:
 # Keno Goertz, PicoQuant GmbH, February 2018
+#
 
 import time
 import ctypes as ct
@@ -388,6 +388,8 @@ class TH260Controller(QtCore.QObject):
                                                 self.warningstext,
                                                 self.warnings)
             self.WARNING.emit("%s" % self.warningstext.value.decode("utf-8"))
+        elif self.warnings.value == 0:
+            self.WARNING.emit('No warning')
 
     # ----------- data aqcuisition ---------------- #
     def getCountRates(self):
@@ -420,7 +422,6 @@ class TH260Controller(QtCore.QObject):
         through a signal for being sorted by the TH260sorter module.
         Output messages and countrates are also sent over signals.
         """
-        # TODO: clean up a bit
         self.NEW_OUTPUT.emit("\nStarting data collection...")
 
         progress = 0
