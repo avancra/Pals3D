@@ -2,5 +2,6 @@
     <qresource>
         <file>icons/warning.png</file>
 	<file>icons/ok.png</file>
+	<file>icons/pals3d.png</file>
     </qresource>
 </RCC>
