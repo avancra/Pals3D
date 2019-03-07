@@ -112,8 +112,8 @@ html_sidebars = {
     ]
 }
 
-html_logo = 'figures/logoPals3D.png'
-html_favicon = 'figures/iconPals3D.ico'
+html_logo = 'figures/pals3Dlogo_200px.png'
+html_favicon = 'figures/pals3Dicon_32px.ico'
 
 # -- Options for HTMLHelp output ------------------------------------------
 
