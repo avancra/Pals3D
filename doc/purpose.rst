@@ -12,14 +12,16 @@ The Pals3D software is meant for performing Positron Annihilation Lifetime Spect
 
 Installation
 ==============
-Coming soon..
 
-Requirements
-------------
-.. todo::
-    packaging
+Pals3D source code is freely available on `Github <https://github.com/avancra/Pals3D>`_ 
 
+To start using Pals3D, you can simply clone the repository:
 
+.. code-block:: bash
+
+    git clone https://github.com/avancra/Pals3D.git
+    cd Pals3D/pals3D
+    python pals3D.py
 
 License
 ========

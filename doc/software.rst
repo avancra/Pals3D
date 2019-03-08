@@ -4,11 +4,11 @@ Software
 
 Pals3D is a graphical application to control the device, perform measurements and sort the data for positron annihilation lifetime measurements using a TCSPC system TimeHarp 260 pico from PicoQuant.
 
-When installed as instructed in the :ref:`install-sect` section the application is launched in a command prompt via the following command:
+When installed as instructed in the :ref:`install-sect` section the application is launched in a command prompt from the pals3D directory via the following command:
 
 .. code-block:: bash
 
-  $ python pals3D
+  $ python pals3D.py
 
 The next section describes the content and usage of the graphical interface, and the following one will go deeper into details of the main software components for future developers to get an overview of the software philosophy.
 
