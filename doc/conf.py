@@ -19,6 +19,13 @@
 #
 import os
 import sys
+import ctypes
+
+from unittest.mock import MagicMock
+
+autodoc_mock_imports = ["numpy", "scipy", "PyQt5", "matplotlib"]
+ctypes.CDLL = MagicMock()
+
 sys.path.insert(0, os.path.abspath('../pals3D'))
 
 
