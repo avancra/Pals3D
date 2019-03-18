@@ -28,16 +28,13 @@ Citation
 
 If you used Pals3D in research work of any kind or in a publication, please acknowledge its author(s) by one of the following methods
 
-If you want to cite all versions of Pals3D, please use the DOI 10.5281/zenodo.2590978
+If you want to cite Pals3D, please use the DOI 10.5281/zenodo.2590978
 
-Alternatively, you may prefer to cite the current version of Pals3D:
-DOI 10.5281/zenodo.2590979
-
-For citation format, you can either use the one below, or go to `the project publication page <https://doi.org/10.5281/zenodo.2590979>`_ to get other citation export options.
+For citation format, you can either use the one below, or go to `the project publication page <https://doi.org/10.5281/zenodo.2590978>`_ to get other citation export options.
 
 Default citation format:
 
-*Aurélie Vancraeyenest. (2019, March 12). Pals3D - A data acquisition software for positron annihilation lifetime spectroscopy (Version v1.0). Zenodo. http://doi.org/10.5281/zenodo.2590979*
+*Aurélie Vancraeyenest. (2019, March 12). Pals3D - A data acquisition software for positron annihilation lifetime spectroscopy (Version v1.0). Zenodo. http://doi.org/10.5281/zenodo.2590978*
 
 
 License
