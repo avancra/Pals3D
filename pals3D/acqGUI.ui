@@ -600,6 +600,7 @@
     <addaction name="actionDLL_version"/>
     <addaction name="actionPals3D_version"/>
     <addaction name="actionPalss3D_help"/>
+    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuMenu"/>
    <addaction name="menuHelp"/>
@@ -638,6 +639,11 @@
    </property>
    <property name="statusTip">
     <string>Open the online documentation</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

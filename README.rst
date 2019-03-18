@@ -58,4 +58,4 @@ Default citation format:
 License
 ============
 
-Pals3D is distributed under the BSD 3-Clause ("BSD New" or "BSD Simplified") License.
+Pals3D is distributed under the GNU General Public License Version 3 (GPL-3.0).

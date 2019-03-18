@@ -1,11 +1,25 @@
+# This file is part of Pals3D
 #
-# Data acquisition GUI for TimeHarp260 Pico
+# Pals3D is a data acquisition software for TimeHarp260 Pico
 # for use with positron annihilation lifetime spectroscpoy
 #
-# -------------------------------
+# ---------------------------------------------
 #
-# (c) Aurelie Vancraeyenest 2019
-# -------------------------------
+# Copyright (c) 2018-2019 Aurelie Vancraeyenest
+# ---------------------------------------------
+#
+# Pals3D is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Pals3D is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Pals3D.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Based on demo code from:
 # Keno Goertz, PicoQuant GmbH, February 2018
@@ -394,6 +408,15 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
     def on_actionPals3D_version_triggered(self):
         self.showMessage("Current version of Pals3D: {}\n"
                          .format(VERSION))
+
+    @QtCore.pyqtSlot()
+    def on_actionAbout_triggered(self):
+        self.showMessage("Pals3D  Copyright (C) 2018-2019 "
+                         "Aurélie Vancraeyenest"
+                         "\nThis program comes with ABSOLUTELY NO WARRANTY."
+                         "\nThis is free software, and you are welcome to "
+                         "redistribute it under certain conditions. "
+                         "See LICENSE file for details.")
 
     @QtCore.pyqtSlot()
     def on_actionPalss3D_help_triggered(self):

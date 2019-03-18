@@ -331,10 +331,13 @@ class Ui_MainWindow(object):
         self.actionPals3D_version.setObjectName("actionPals3D_version")
         self.actionPalss3D_help = QtWidgets.QAction(MainWindow)
         self.actionPalss3D_help.setObjectName("actionPalss3D_help")
+        self.actionAbout = QtWidgets.QAction(MainWindow)
+        self.actionAbout.setObjectName("actionAbout")
         self.menuMenu.addAction(self.actionExit)
         self.menuHelp.addAction(self.actionDLL_version)
         self.menuHelp.addAction(self.actionPals3D_version)
         self.menuHelp.addAction(self.actionPalss3D_help)
+        self.menuHelp.addAction(self.actionAbout)
         self.menubar.addAction(self.menuMenu.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
 
@@ -396,5 +399,6 @@ class Ui_MainWindow(object):
         self.actionPalss3D_help.setText(_translate("MainWindow", "Pals3D help"))
         self.actionPalss3D_help.setToolTip(_translate("MainWindow", "Open the online documentation"))
         self.actionPalss3D_help.setStatusTip(_translate("MainWindow", "Open the online documentation"))
+        self.actionAbout.setText(_translate("MainWindow", "About"))
 
 import resources_rc

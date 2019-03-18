@@ -1,12 +1,26 @@
+# This file is part of Pals3D
 #
 # TH260Sorter is meant to sort data from a PicoQuant TimeHarp 260 Pico
 # via TH260LIB.DLL v 3.1. for applications to positron annihilation
 # lifetime spectroscopy.
 #
-# -------------------------------
+# ---------------------------------------------
 #
-# (c) Aurelie Vancraeyenest 2019
-# -------------------------------
+# Copyright (c) 2018-2019 Aurelie Vancraeyenest 
+# ---------------------------------------------
+#
+# Pals3D is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Pals3D is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Pals3D.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Based on demo code from:
 # Keno Goertz, PicoQuant GmbH, February 2018
