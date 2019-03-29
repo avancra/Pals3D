@@ -40,7 +40,7 @@ from th260 import th260controller, th260sorter
 # put here visual ressources
 ICON_OK = ":/icons/ok.png"
 ICON_WARNING = ":/icons/warning.png"
-VERSION = '0.1'
+VERSION = '1.0'
 
 
 class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
@@ -420,7 +420,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def on_actionPalss3D_help_triggered(self):
-        webbrowser.open('https://github.com/avancra/Pals3D')
+        webbrowser.open('http://pals3d.readthedocs.io/')
 
     def checkExistingFilename(self, filename):
         try:
@@ -450,7 +450,7 @@ class MainWindow(QtWidgets.QMainWindow, acqGUI.Ui_MainWindow):
 
     def fetchSettings(self, mode):
         """Get the CFD settings for each channel from the GUI widgets"""
-        if mode is "T2":
+        if mode == "T2":
             self.th260.syncCFDLevel = self.T2syncLevelValue.value()
             self.th260.syncCFDZeroCross = self.T2syncZeroValue.value()
             self.th260.syncOffset = self.T2syncOffsetValue.value()
